@@ -1,0 +1,42 @@
+<template name="registerBlog">
+	<form id="register-form">
+		<label for="url">Blog URL:</label>
+		<br>
+		<input type="url" id="url" name="url" placeholder="http://myblog.com" size="60" required>
+		<br>
+		<label for="feed">Blog RSS feed:</label>
+		<br>
+		<input type="url" id="feed" name="feed" placeholder="http://myblog.com/rss" size="60" required>
+		<br>
+		<label for="author">Author name:</label>
+		<br>		
+		<input type="text" id="author" name="author" placeholder="your name here" size="40">
+		<br>
+		<label for="twHandle">Twitter handle (optional): </label>
+		<br>
+		<input type="text" id="twHandle" name="twHandle" placeholder="@yourtwitterhandle" size="18">
+		<br>
+		<label for="type">Type: </label>
+		<br>
+		<select id="type" name="type" required>
+			<option id="none" disabled selected>-choose-</option>
+			<option id="galleries" value="galleries">galleries</option>
+			<option id="libraries" value="libraries">libraries</option>
+			<option id="archives" value="archives">archives</option>
+			<option id="museums" value="museums">museums</option>
+			<option id="GLAM" value="GLAM">general GLAM</option>
+			<option id="DH" value="DH">digital humanities</option>
+		</select>
+		<br>
+		<button id="reg-button">Register!</button>
+	</form>
+</template>
+
+<template name="success">
+	<p>
+		Success! Thanks for registering.
+	</p>
+	<p>
+		Your blog feed will be checked in the next few days and added to <a href="https://twitter.com/ausglamblogs">@ausglamblogs</a>.
+	</p>
+</template>

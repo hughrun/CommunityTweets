@@ -1,0 +1,85 @@
+
+<Template name="main">
+<head>
+  <title>GLAMblogs</title>
+</head>
+<body>
+	{{> header}}
+	<div class="wrapper">
+		{{> yield}}
+	</div>
+	<div class="clear-float"></div>
+	{{> footer}}
+</body>
+</template>
+
+<template name="loading">
+	<p>loading...</p>
+</template>
+
+<template name="header">
+	<a href="/"><h2>GLAM blogs of Australia</h2></a>
+	<hr />
+</template>
+
+<template name="startup">
+	<div class="startup">
+	<p>You're up! Let's get started by registering your owner account.
+	<br>Click the link on the email you receive, and you'll be ready to go.
+	</p>
+	<form id="startup-form" action="action" class="register">
+	    <input type="email" name="email" id="email1" placeholder="email address" class="required">
+	    <br>
+	    <input type="email" name="email_again" id="email2" placeholder="confirm email address" class="required">
+	    <br>
+	    <input type="submit" id="create-account" value="Register Owner">
+	    <p></p>
+	</form>
+	</div>
+</template>
+
+<template name="home">	
+	<p>
+	Hi there. You can use this app to register and search for blogs by Australian GLAM people. We use the list of feeds to power <a href="https://twitter.com/ausglamblogs">@AusGLAMBlogs</a>. Registrations are subject to an approval process so we can keep our feed clean.
+	</p>
+	<p>
+	If you have any questions or suggestions about this service contact us at 
+	<span class="email">hello AT newcardigan DOT org</span>
+	</p>
+	<section class="menu">
+		<div class="home-icon">
+			<a href="/registerblog">
+				<img src="/images/reg.svg" alt="register a blog">
+				<br>
+				Register
+			</a>
+		</div>
+		<div class="home-icon">
+			<a href="findblogs">
+				<img src="/images/search.svg" alt="list of blogs">
+				<br>
+				Blog listing
+			</a>
+		</div>
+		<div class="home-icon">
+			<a href="https://twitter.com/ausglamblogs">
+				<img src="/images/robot.svg" alt="link to @ausglamblogs on twitter">
+				<br>
+				@ausglamblogs
+			</a>
+		</div>
+		<div class="clear-float"></div>
+	</section>
+</template>
+
+<template name="footer">
+	<footer class="footer">
+		<hr />
+		a <a href="http://newcardigan.org">newCardigan</a> project
+		<br>
+		<button class="menu-button" id="admin-button">admin</button>
+
+  <!-- TRACKING CODE GOES HERE -->
+		
+	</footer>
+</template>

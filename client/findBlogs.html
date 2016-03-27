@@ -1,0 +1,41 @@
+<template name="findBlogs">
+	<form>
+		<select id="searchType">
+			<option id="none" disabled selected>filter by...</option>
+			<option id="galleries" value="galleries">galleries</option>
+			<option id="libraries" value="libraries">libraries</option>
+			<option id="archives" value="archives">archives</option>
+			<option id="museums" value="museums">museums</option>
+			<option id="GLAM" value="GLAM">general GLAM</option>
+			<option id="DH" value="DH">digital humanities</option>
+			<option id="all" value="all">none</option>
+		</select>
+			<button id="opml" class="admin">get OPML</button>
+	</form>
+	{{#each showBlogs}}
+		<div class="listing">
+			<span class="label">Address: </span><a href="{{url}}">{{cleanURL url}}</a>
+			<br>
+			{{#if author}}
+			<span class="label">Author: </span>{{author}}
+			{{else}}
+			<span class="label">Author: </span>no author listed
+			{{/if}}
+			<br>
+			{{#if twHandle}}
+			<span class="label">Twitter: </span><a href="https://www.twitter.com/{{twHandle}}">{{twHandle}}</a>
+			{{else}}
+			<span class="label">Twitter: </span>no Twitter handle listed
+			{{/if}}
+			<br>
+			<span class="label">Type: </span>{{type}}
+		</div>
+		{{/each}}
+		{{> xml}}
+</template>
+
+<template name="xml">
+	<div class="clear-float">
+hello
+</div>
+</template>

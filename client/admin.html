@@ -1,0 +1,78 @@
+<template name="admin">
+	{{#if currentUser}}
+		<div class="admin-head">
+			hello {{emails.[0].address}}!
+		</div>
+			{{#each approvalList}}
+			<div class="approval-list">
+			{{url}} <span class="pink">|</span> {{author}} <span class="pink">|</span> {{twHandle}} <span class="pink">|</span> {{type}}
+			<span class="AR-buttons">
+				<button name="approve" value="{{url}}" class="admin">Approve</button>
+				<button name="reject" value="{{url}}" class="admin">Reject</button>
+			</span>
+			</div>
+			{{/each}}
+			{{#if profile.owner}}
+				<div class="owner">
+				<p><i>You are the owner - with great power comes great responsibility!</i></p>
+				{{#each users}}
+					{{#if notOwner}}
+					<p>{{emails.[0].address}}
+					<button class="admin" name="delete-user" value="{{emails.[0].address}}">Delete User</button>
+					<button class="admin" name="make-owner" value="{{emails.[0].address}}">Transfer Ownership</button>
+					</p>
+					{{/if}}
+				{{/each}}
+				</div>
+			{{/if}}
+			<button id="log-out">Log Out</button>
+			<button id="register-user">Register User</button>
+			<button id="remove-listing">Remove Listing</button>
+	{{/if}}
+</template>
+
+<template name="login">
+	<form id="login-form" name="login" action="action" class="login">
+	    <input name="email" placeholder="email" class="required">
+	    <br>
+	    <input type="password" name="password" placeholder="password" class="required">
+	    <br>
+	    <input type="submit" id="login-button" value="Sign in">
+	    <button class="forgot" id="forgot">iForgot</button>
+	    <p></p>
+	</form> 
+</template>
+
+<template name="register">
+	<form id="register-form" action="action" class="register">
+	    <input type="email" name="email" id="email1" placeholder="email address" class="required">
+	    <br>
+	    <input type="email" name="email_again" id="email2" placeholder="confirm email address" class="required">
+	    <br>
+	    <input type="submit" id="create-account" value="Register User">
+	    <p></p>
+	</form>
+</template>
+
+<template name="removeListing">
+	<form id="remove-listing" action="action">
+		<p>Please note you need to include the full protocol - 'http' won't match 'https'</p>
+		<input type="url" id="url" name="url" placeholder="http://blog.com" size="60" required>
+		<button id="delete">Delete</button>
+	</form>
+</template>
+
+<template name="reset">
+	<form id="reset-form" action="action" class="register">
+	    <input type="password" id="pass-one" placeholder="type new password">
+	    <br>
+	   	<input type="password" id="pass-two" placeholder="password again">
+	    <br>
+	    <input type="submit" id="reset-password" value="set password">
+	    <p></p>
+	</form>	
+</template>
+
+<template name="forgot">
+	Sorry about your shit memory. Click the link in your email to reset your password.
+</template>
