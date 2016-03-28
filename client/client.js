@@ -374,9 +374,12 @@ Template.removeListing.events({
   'submit form': function(event){
     event.preventDefault();
     var blog = $('[name=url]').val();
-    var clean = /\/$/;
-    var url = blog.replace(clean, "");
-    Meteor.call('deleteBlog', url);
+    // You can clean the URLs using the commented-out code below if you did this for everything on the way in.
+    // This allows admins to use a trailing slash and have it stripped out
+    // If you didn't clean your URLs on the way in, however, you may not be able to delete listings
+    // var clean = /\/$/;
+    // var url = blog.replace(clean, "");
+    Meteor.call('deleteBlog', /*url*/blog);
     Router.go('admin');
   }
 });

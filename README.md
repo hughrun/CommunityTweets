@@ -1,13 +1,17 @@
 # CommunityTweets
-Formerly known as meteor2twitter at GitLab
+Formerly known as meteor2twitter at GitLab.
 
-v 0.2.0
+v 0.2.1
 
 ## Overview
 
 This is a Meteor app that allows users to add a blog feed listing via a web interface, stores them in a Mongo database, and tweets when a new feed is added or a new post is published.
 
 It loops every 10 minutes, and only announces one new feed each cycle, to avoid triggering Twitter’s spam blockers.
+
+## New in v 0.2.1
+* fix to allow listing removal for existing collection
+* cleaned up leftover testing code
 
 ## New in v 0.2.0
 * cleaner admin interface
