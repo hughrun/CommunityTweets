@@ -16,7 +16,7 @@ var twitter = new TwitMaker({
 var run = function() {
             runBot()
           };
-var timerVar = Meteor.setInterval (run, 600000);
+var timerVar = Meteor.setInterval (run, 600000); 
 
 // When 10 minutes has elapsed, run the bot!
 console.log('running...');

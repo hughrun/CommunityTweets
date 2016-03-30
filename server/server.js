@@ -12,7 +12,7 @@ Accounts.emailTemplates.from = "GLAM Blogs alertBot <alerts@newcardigan.org>";
 // Only needed for dev testing on a local machine
 
 // Meteor.startup( function() {
-//   process.env.MAIL_URL = “smtp://postmaster@mg1.<yoururl>:<yourkey>@smtp.mailgun.org:587/“;
+//   // process.env.MAIL_URL = "smtp://postmaster@mg1.<yoururl>:<yourkey>@smtp.mailgun.org:587/";
 // });
 
 //  #############################
@@ -47,10 +47,18 @@ Accounts.emailTemplates.from = "GLAM Blogs alertBot <alerts@newcardigan.org>";
     'approveBlog': function(url){
       var admin = Meteor.user();
       if (admin) {
-        return Blogs.upsert({url: url}, {url: url, feed: feed, author: author, twHandle: twHandle, type: type, approved: true});
+        try { 
+          var unapproved = UnapprovedBlogs.findOne({url:url});
+          Blogs.upsert({url: url}, {$set:{feed: unapproved.feed, author: unapproved.author, twHandle: unapproved.twHandle, type: unapproved.type, approved: true, announced: false}});
+          return UnapprovedBlogs.remove({url:url});
+        } catch (error) {
+          // on next version make this go to a proper error page/pop-over
+          console.log("error unapproving: " + error)
+        }
       } else {
         console.log('user not logged in on client');
         // probably should do something more sophisticated than this.
+        // maybe throw to login screen?
       }
     },
     'rejectBlog': function(url){
