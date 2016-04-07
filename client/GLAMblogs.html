@@ -14,11 +14,21 @@
 </template>
 
 <template name="loading">
-	<p>loading...</p>
+	<p>just a sec...</p>
+	<div id="fountainG">
+	<div id="fountainG_1" class="fountainG"></div>
+	<div id="fountainG_2" class="fountainG"></div>
+	<div id="fountainG_3" class="fountainG"></div>
+	<div id="fountainG_4" class="fountainG"></div>
+	<div id="fountainG_5" class="fountainG"></div>
+	<div id="fountainG_6" class="fountainG"></div>
+	<div id="fountainG_7" class="fountainG"></div>
+	<div id="fountainG_8" class="fountainG"></div>
+</div>
 </template>
 
 <template name="header">
-	<a href="/"><h2>GLAM blogs of Australia</h2></a>
+	<a href="/"><h1>GLAM blogs of Australia</h1></a>
 	<hr />
 </template>
 
@@ -46,26 +56,41 @@
 	If you have any questions or suggestions about this service contact us at 
 	<span class="email">hello AT newcardigan DOT org</span>
 	</p>
+
 	<section class="menu">
+		<div class="counter-labels">
+		<div class="counter-name">Blogs:</div>
+		<div class="clear-float"></div>
+		<div class="counter-name">Articles:</div>
+		<div class="clear-float"></div>
+		<div class="counter-name">Tags:</div>
+	</div>
+		<div class="counter">
+			<div class="counter-circle">{{totalBlogs}}</div>
+			<div class="clear-float"></div>
+			<div class="counter-circle">{{totalArticles}}</div>
+			<div class="clear-float"></div>
+			<div class="counter-circle">{{totalTags}}</div>
+		</div>	
 		<div class="home-icon">
 			<a href="/registerblog">
 				<img src="/images/reg.svg" alt="register a blog">
 				<br>
 				Register
 			</a>
-		</div>
+		</div>	
 		<div class="home-icon">
-			<a href="findblogs">
-				<img src="/images/search.svg" alt="list of blogs">
+			<a href="latest">
+				<img src="/images/search.svg" alt="search and browseblogs">
 				<br>
-				Blog listing
+				Discover
 			</a>
 		</div>
 		<div class="home-icon">
 			<a href="https://twitter.com/ausglamblogs">
 				<img src="/images/robot.svg" alt="link to @ausglamblogs on twitter">
 				<br>
-				@ausglamblogs
+				Follow
 			</a>
 		</div>
 		<div class="clear-float"></div>
@@ -79,7 +104,9 @@
 		<br>
 		<button class="menu-button" id="admin-button">admin</button>
 
-  <!-- TRACKING CODE GOES HERE -->
+<!-- Piwik -->
+
+<!-- End Piwik Code -->
 		
 	</footer>
 </template>

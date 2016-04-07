@@ -137,59 +137,82 @@ Template.startup.onRendered(function(form){
   });
 });
 
-// login
-  Template.login.events({
-    'submit form': function(event){
-      event.preventDefault();
-    },
-    'click [id=forgot]': function(event){
-      event.preventDefault();
+// BUTTONS
+
+Template.buttons.events({
+  'click #browse-tags': function(event){
+    event.preventDefault();
+    Router.go('tagsList');
+  },
+  'click #search': function(event){
+    event.preventDefault();
+    Router.go('searchBox');
+  },
+  'click #browse-blogs': function(event){
+    event.preventDefault();
+    Router.go('findBlogs');
+  },
+  'click #opml':function(event){
+    event.preventDefault();
+    Router.go('opml');
+  }
+});
+
+// LOGIN
+
+Template.login.events({
+  'submit form': function(event){
+    event.preventDefault();
+  },
+  'click [id=forgot]': function(event){
+    event.preventDefault();
+    var email = $('[name=email]').val();
+    // call this function to send recovery email. 
+    // It calls Accounts.sendResetPasswordEmail, but we don't have to define that. Meteor magic!
+    Accounts.forgotPassword({email: email});
+    Router.go('forgot');
+  }
+});
+Template.login.onRendered(function(){
+  var currentUser = Meteor.user();
+  var validator = $('.login').validate({
+    wrapper: "div",
+    submitHandler: function(event){
       var email = $('[name=email]').val();
-      // call this function to send recovery email. 
-      // It calls Accounts.sendResetPasswordEmail, but we don't have to define that. Meteor magic!
-      Accounts.forgotPassword({email: email});
-      Router.go('forgot');
+      var password = $('[name=password]').val();
+      Meteor.loginWithPassword(email, password, function(error){
+        if (error){
+          // careful with this, it needs to be unclear which one is wrong to help prevent phishing
+          if (error.reason == "User not found"){
+            validator.showErrors({
+            password: "Wrong password, or user not found"   
+            });
+          }
+          if (error.reason == "Incorrect password"){
+            validator.showErrors({
+               password: "Wrong password, or user not found" 
+            });
+          }
+          else {
+            validator.showErrors({
+               password: "Error: are you using an old sign-in token?"
+            });
+          }
+        } else {
+          var currentRoute = Router.current().route.getName();
+            if (currentRoute == "login"){
+              Router.go('admin');
+            }
+          }
+      });
+        // clear any reset tokens so you can still navigate around if you change your mind abour resetting.
+        Session.set('resetToken', '');
     }
   });
-  Template.login.onRendered(function(){
-    var currentUser = Meteor.user();
-    var validator = $('.login').validate({
-      wrapper: "div",
-      submitHandler: function(event){
-        var email = $('[name=email]').val();
-        var password = $('[name=password]').val();
-        Meteor.loginWithPassword(email, password, function(error){
-          if (error){
-            // careful with this, it needs to be unclear which one is wrong to help prevent phishing
-            if (error.reason == "User not found"){
-              validator.showErrors({
-              password: "Wrong password, or user not found"   
-              });
-            }
-            if (error.reason == "Incorrect password"){
-              validator.showErrors({
-                 password: "Wrong password, or user not found" 
-              });
-            }
-            else {
-              validator.showErrors({
-                 password: "Error: are you using an old sign-in token?"
-              });
-            }
-          } else {
-            var currentRoute = Router.current().route.getName();
-              if (currentRoute == "login"){
-                Router.go('admin');
-              }
-            }
-        });
-          // clear any reset tokens so you can still navigate around if you change your mind abour resetting.
-          Session.set('resetToken', '');
-      }
-    });
-  });
+});
 
-// register
+// REGISTER
+
   // prevent default behavour
 Template.register.events({
   'submit form': function(event){
@@ -283,18 +306,6 @@ Template.registerBlog.onRendered(function(form){
   });
 });
 
-Template.findBlogs.events({
-  'change [id=searchType]': function(event){
-    event.preventDefault();
-    var type = $('[id=searchType]').val();
-    Session.set('showType', type);
-  },
-  'click #opml':function(event){
-    event.preventDefault();
-    Router.go('opml');
-  }
-});
-
 // ADMIN
 
 Template.admin.onRendered(function(){
@@ -375,8 +386,8 @@ Template.removeListing.events({
     event.preventDefault();
     var blog = $('[name=url]').val();
     // You can clean the URLs using the commented-out code below if you did this for everything on the way in.
-    // This allows admins to use a trailing slash and have it stripped out
-    // If you didn't clean your URLs on the way in, however, you may not be able to delete listings
+    // This allows admins to use a trailing slash and have it stripped out.
+    // If you didn't clean your URLs on the way in, however, you may not be able to delete listings if you include this.
     // var clean = /\/$/;
     // var url = blog.replace(clean, "");
     Meteor.call('deleteBlog', /*url*/blog);
@@ -390,7 +401,7 @@ Template.reset.events({
     var passOne = $('[id=pass-one]').val();
     var passTwo = $('[id=pass-two]').val();
     var token = Session.get('resetToken');
-    // we need to add a submitHandler here to do this properly, but for now...
+    // we should add a submitHandler here to do this properly, but for now...
     if (passOne === passTwo){
       try {
         Accounts.resetPassword(token, passOne)
@@ -417,31 +428,46 @@ Template.footer.events({
   }
 });
 
+// SEARCHING AND BROWSING
+
+Template.findBlogs.events({
+  'change [id=searchType]': function(event){
+    event.preventDefault();
+    var type = $('[id=searchType]').val();
+    Session.set('showType', type);
+  }
+});
+
+Template.latest.events({
+  'click [name=tag]': function(event){
+    event.preventDefault();
+    var tagName = event.target.id;
+    Session.set("blogCategory", tagName)
+    Router.go('tagView');
+  }
+});
+
+Template.searchBox.events({
+  'click [name=tag]': function(event){
+    event.preventDefault();
+    var tagName = event.target.id;
+    Session.set("blogCategory", tagName)
+    Router.go('tagView');
+  }
+});
+
+Template.tagsList.events({
+  'click [name=tag]': function(event){
+    event.preventDefault();
+    var tagName = event.target.id;
+    Session.set("blogCategory", tagName)
+    Router.go('tagView');
+  }
+});
 
 // ****************
 // HELPERS
 // ****************
-
-Template.findBlogs.helpers({
-  'showBlogs': function(){
-    var type = Session.get('showType');
-    if (type) {
-      if (type === "all") {
-      return Blogs.find({approved: true}, {sort:{url: 1}})
-      } else {
-        return Blogs.find({approved: true, type: type}, {sort:{url: 1}})
-      }
-    } else {
-    return Blogs.find({approved: true}, {sort:{url: 1}})
-    } 
-  },
-  'cleanURL': function(x) {
-    // removes trailing slashes and preceding http etc
-    var cleanup = /http:\/\/|https:\/\/|\/+$/ig;
-    var cleaned = x.replace(cleanup, "");
-    return cleaned;
-  }
-});
 
 Template.admin.helpers({
   'approvalList': function(){
@@ -466,8 +492,95 @@ Template.admin.helpers({
   }
 });
 
-// GENERAL SUBSCRIPTIONS
+Template.findBlogs.helpers({
+  'showBlogs': function(){
+    var type = Session.get('showType');
+    if (type) {
+      if (type === "all") {
+      return Blogs.find({approved: true}, {sort:{url: 1}})
+      } else {
+        return Blogs.find({approved: true, type: type}, {sort:{url: 1}})
+      }
+    } else {
+    return Blogs.find({approved: true}, {sort:{url: 1}})
+    } 
+  },
+  'cleanURL': function(x) {
+    // removes trailing slashes and preceding http etc
+    var cleanup = /http:\/\/|https:\/\/|\/+$/ig;
+    var cleaned = x.replace(cleanup, "");
+    return cleaned;
+  }
+});
+
+Template.home.helpers({
+  'totalBlogs': function () {
+    var allBlogs = Blogs.find(); 
+    return allBlogs.count();
+  },
+  'totalArticles': function () {
+    var allArticles = Articles.find();
+    return allArticles.count()
+  },
+  'totalTags': function () {
+    var allTags = Tags.find();
+    return allTags.count()
+  }
+});
+
+Template.latest.helpers({
+  latest: function(){
+    return Articles.find({},{sort: {date: -1},limit:10});
+  }
+});
+
+Template.searchBox.helpers({
+  myAttributes: function(){
+    var attributes = {placeholder: "Find posts about...", class:"search-input", id:"search-box", autofocus:"true"};
+    return attributes
+  },
+    getQuery: function(){
+    var term = document.getElementById('search-box');
+    return term.value
+  },
+  articlesIndex: () => BlogsIndex
+});
+
+Template.tagsList.helpers({
+  tagList: function(){
+    return Tags.find({},{sort:{total:-1}});
+  },
+  mostPopular: function(){
+    var mP = Tags.findOne({},{sort:{total:-1}});
+    Session.set("topTag", mP.total)
+    return mP.total;
+  },
+  tagPercent: function(tagTotal){
+    var total = Session.get("topTag");
+    var result = (tagTotal * 100)/total;
+    return result
+  }
+});
+
+Template.tagView.helpers({
+  tagBrowse: function(){
+    var tag = Session.get("blogCategory");
+    return Articles.find({categories:{$in: [tag]}},{sort:{date:-1}})
+  },
+  tagTitle: function(){
+    var tagName = Session.get("blogCategory");
+    return tagName;
+  },
+  tagDate: function(date){
+    var options = {year: 'numeric', month: 'short', day: 'numeric'};
+    niceDate = date.toLocaleString('en-AU', options);
+    return niceDate;
+  }
+});
+
+// SUBSCRIPTIONS
 
 Meteor.subscribe('blogs');
 Meteor.subscribe('uBlogs');
-
+Meteor.subscribe('tags');
+Meteor.subscribe('articles');

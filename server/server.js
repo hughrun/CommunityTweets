@@ -155,3 +155,15 @@ Meteor.publish('users', function(){
 Meteor.publish('usersAll', function(){
     return Meteor.users.find();
 });
+
+Meteor.publish('articles', function(){
+    return Articles.find();
+});
+
+Meteor.publish('tags', function(){
+    return Tags.find();
+});
+
+
+
+

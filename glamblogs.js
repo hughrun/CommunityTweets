@@ -3,6 +3,8 @@
 
 Blogs = new Meteor.Collection('blogs');
 UnapprovedBlogs = new Meteor.Collection('uBlogs');
+Articles = new Meteor.Collection('articles');
+Tags = new Meteor.Collection('tags');
 
 Meteor.users.deny({
   update: function() {
@@ -12,6 +14,17 @@ Meteor.users.deny({
   return true;
   },
 });
+
+// EASY SEARCH
+
+BlogsIndex = new EasySearch.Index({
+  collection: Articles,
+  fields: ['title', 'author','categories', 'blog'],
+  engine: new EasySearch.MongoDB({
+    sort: () => [["date","descending"],["title","ascending"]]
+  })
+});
+
 
 // IRON ROUTER
 
@@ -67,10 +80,52 @@ Router.route('/reset', {
 
 Router.route('/registerBlog');
 Router.route('/success');
-Router.route('/findBlogs');
+Router.route('/findBlogs', {
+  
+  loadingTemplate: 'loading',
+
+  waitOn: function(){
+    return Meteor.subscribe('blogs');
+  },
+
+  action: function(){
+    this.render('findBlogs');
+  }
+});
+
 Router.route('/login');
 Router.route('/forgot');
 Router.route('/removeListing');
+Router.route('/latest');
+Router.route('/tagView');
+
+Router.route('/tagsList', {
+
+  loadingTemplate: 'loading',
+
+  waitOn: function(){
+    return Meteor.subscribe('tags');
+  },
+
+  action: function(){
+    if (this.ready()){
+     this.render('tagsList');      
+    }
+  }
+});
+
+Router.route('/searchBox', {
+  
+  loadingTemplate: 'loading',
+
+  waitOn: function(){
+    return Meteor.subscribe('articles');
+  },
+
+  action: function(){
+    this.render('searchBox');
+  }
+});
 
 Router.route('/admin', {
   name: 'admin',
@@ -104,7 +159,9 @@ Router.route('/register', {
   }
 });
 
+// OPML
 // creates fresh opml file when user presses button
+
 Router.route('/opml', function(){
   var head = '<?xml version="1.0" encoding="ISO-8859-1"?>\n' +
   '<opml version="1.1">\n' +

@@ -11,22 +11,24 @@ var twitter = new TwitMaker({
   , access_token_secret:  Meteor.settings.TWITTER_ACCESS_TOKEN_SECRET
 });
 
-// Set timeout to loop the whole thing every 10 minutes
+// require fibres from npm
+var Fiber = Npm.require( "fibers" );
+
+// Set timeout to loop the whole thing every 10 minutes 600000
 // Here we have to use Meteor.setInterval to replace setInterval from the original bot
-var run = function() {
-            runBot()
-          };
-var timerVar = Meteor.setInterval (run, 600000); 
+var timerVar = Meteor.setInterval (runBot, 600000); 
 
 // When 10 minutes has elapsed, run the bot!
 console.log('running...');
 function runBot() {
 
-// +++++++++++++++++++++++++++++++++++++++
-  // check for any new listings to announce
-  // if there are any, announce the first one only
-  // this stops us from blasting out a whole bunch at once
-  // and triggering the Twitter Police
+// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+// check for any new listings to announce
+// if there are any, announce the first one only
+// this stops us from blasting out a whole bunch at once
+// and triggering the Twitter Police
+// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
   var fresh = Blogs.find({announced: false});
   if (fresh.count() > 0) {
     var b = Blogs.findOne({announced: false});
@@ -53,9 +55,13 @@ function runBot() {
   Blogs.update({_id: id}, {$set:{announced: true}});
 }
 
-// +++++++++++++++++++++++++++++++++++++++
+// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+// iterate over the list of blogs
+// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-  // iterate over the list of blogs
+  // **********************************************************
+  // find any new posts using feedparser
+  // **********************************************************
 
   var bList = Blogs.find();
   bList.forEach(function(blog) {
@@ -73,7 +79,7 @@ if (blog.approved !== false) {
 
     // deal with any errors in FeedParser
     req.on('error', function (error) {
-      console.error('feedparser error: ' + error); 
+      console.error('feedparser error: ' + error + 'occured on ' + feed); 
     });
 
     req.on('response', function (res) {
@@ -85,7 +91,7 @@ if (blog.approved !== false) {
 
     // deal with any errors in the code
     feedparser.on('error', function(error) {
-      console.error('feedparser code error: ' + error); 
+      console.error('feedparser code error: ' + error + ' with ' + feed); 
     });
 
     feedparser.on('readable', function() {
@@ -104,6 +110,11 @@ if (blog.approved !== false) {
         var dateYesterday = dateNow - 43200000;
         // Get the date 12 hours and ten minutes ago
         var dateYPT = dateNow - 43800000;
+
+        // **********************************************************
+        // tweet posts published 12 hour ago
+        // **********************************************************
+
         // Ensure we only try to post things published between 12 hours and 12 hours 10 minutes ago
         if (item.date > dateYPT && item.date < dateYesterday){
 
@@ -150,8 +161,50 @@ if (blog.approved !== false) {
             }
           }
         }
-        // if the publication date was 11 minutes ago or less (i.e. since we last ran the bot)
+        // **********************************************************
+          // get posts where the publication date was 11 minutes ago  
+          // or less  (i.e. published since we last ran the bot)
+        // **********************************************************
+        
         if (item.date > lastRun){
+
+        // **********************************************************
+        // add article data to the Articles and Tags collections
+        // use Fibers so we can interact with the collections inside Feedparser
+        // see https://stackoverflow.com/questions/21151202/async-call-generates-error-cant-wait-without-a-fiber-even-with-wrapasync
+        // add any tags to the Tags collection
+        // **********************************************************
+
+          Fiber(function(){
+            var exists = Articles.find({link: item.link});
+            if (!exists) {
+              var cats = item.categories;
+              cats.forEach(function(x){
+                var tag = x.toLowerCase();
+                Tags.upsert({tag: tag}, {$inc:{total: 1}});
+              });
+            };
+            Fiber.yield();
+          }).run()
+
+          // add the article to the Articles collection
+          Fiber(function(){
+            var now = Date.now();
+            var date = item.pubdate;
+            var array = item.categories;
+            var cats = [];
+            array.forEach(function(x){
+              var normalised = x.toLowerCase();
+              cats.push(normalised);              
+            });
+            Articles.upsert({link: item.link}, {$set: {title: item.title, author: item.author, categories: cats, blog: meta.title, blogLink: meta.link, date: date}});              
+            Fiber.yield();           
+          }).run()
+
+          // **********************************************************
+          // now tweet the new post 
+          // using the same setup we used for 12hr old ones
+          // **********************************************************
 
           // Here we are ensuring that long post titles don't lose the link in the tweet.
           var titleLength = item.title.length;

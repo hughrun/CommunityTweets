@@ -1,4 +1,6 @@
 <template name="findBlogs">
+	{{>buttons}}
+	<br>
 	<form>
 		<select id="searchType">
 			<option id="none" disabled selected>filter by...</option>
@@ -10,7 +12,7 @@
 			<option id="DH" value="DH">digital humanities</option>
 			<option id="all" value="all">none</option>
 		</select>
-			<button id="opml" class="admin">get OPML</button>
+			
 	</form>
 	{{#each showBlogs}}
 		<div class="listing">
@@ -31,4 +33,79 @@
 			<span class="label">Type: </span>{{type}}
 		</div>
 		{{/each}}
+</template>
+
+<template name="buttons">
+	<div class="buttons">
+		<button class="admin" id="opml">get OPML</button>
+		<button class="admin" id="browse-tags">browse tags</button>
+		<button class="admin" id="search">search posts</button>
+		<button class="admin" id="browse-blogs">browse blogs</button>
+	</div>
+</template>
+
+<template name="latest">
+	{{>buttons}}
+	<h2 class="tag-header">The latest from Australia's GLAM bloggers...</h2>
+	{{#each latest}}
+	<div class="top-ten">
+		<span class="article-title"><a href="{{link}}">{{title}}</a></span><br>
+		<span class="article-author">{{author}}</span> ...<span class="blog-name">{{blog}}</span><br>
+		{{#each categories}}
+			<span class="article-tags" id="{{this}}" name="tag">{{this}}</span>
+		{{/each}}
+	</div>
+	{{/each}}
+</template>
+
+<template name="tagView">
+	{{>buttons}}
+	{{#with tagTitle}}
+	<h2 class="tag-header">posts about {{this}}</h2>
+	{{/with}}
+	{{#each tagBrowse}}
+		<div class="top-ten">
+		<span class="article-title"><a href="{{link}}">{{title}}</a></span><br>
+		<span class="article-author">{{author}}</span><br>
+			<span class="blog-name"><a href="{{blogLink}}">{{blog}}</a> - {{tagDate(date)}}</span>
+		</div>
+	{{/each}}
+</template>
+
+<template name="tagsList">
+	{{>buttons}}
+	<div class="tags-list">
+	<h2 class="tag-header">Tags</h2>
+	{{#with mostPopular}}
+		{{#each tagList}}
+			<div class="tags-percent" style="width:{{tagPercent(total)}}%"></div>
+			<div class="tag-label" name="tag" id="{{tag}}">{{tag}}</div>
+		{{/each}}
+	{{/with}}
+</div>
+</template>
+
+<template name="searchBox">
+	{{>buttons}}
+	<div class="search">
+    {{> EasySearch.Input index=articlesIndex event="enter" attributes=myAttributes noDocumentsOnEmpty=true}}
+    {{#EasySearch.IfNoResults index=articlesIndex}}
+    {{#with getQuery}}
+  		<div>We don't have anything about <span class="missing-term">{{this}}</span> yet.</div> 
+  		<div>You should blog about it!</div>
+  	{{/with}}
+	{{/EasySearch.IfNoResults}}
+    </div>
+    <ul>
+        {{#EasySearch.Each index=articlesIndex}}
+			<div class="top-ten">
+				<span class="article-title"><a href="{{link}}">{{title}}</a></span><br>
+				<span class="article-author">{{author}}</span> ...<span class="blog-name">{{blog}}</span><br>
+				{{#each categories}}
+					<span class="article-tags" id="{{this}}" name="tag">{{this}}</span>
+				{{/each}}
+			</div>
+        {{/EasySearch.Each}}
+         <div class="load-more">{{> EasySearch.LoadMore index=articlesIndex content="Load more..."}}</div>
+    </ul>
 </template>
