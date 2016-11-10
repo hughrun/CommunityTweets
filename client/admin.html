@@ -5,11 +5,13 @@
 		</div>
 			{{#each approvalList}}
 			<div class="approval-list">
-			{{url}} <span class="pink">|</span> {{author}} <span class="pink">|</span> {{twHandle}} <span class="pink">|</span> {{type}}
-			<span class="AR-buttons">
-				<button name="approve" value="{{url}}" class="admin">Approve</button>
-				<button name="reject" value="{{url}}" class="admin">Reject</button>
-			</span>
+				<div class="approval-list-item">
+				<span class="approval-feed">{{feed}}</span> <span class="pink">|</span> {{author}} <span class="pink">|</span> {{twHandle}} <span class="pink">|</span> {{type}}
+				</div>
+				<div class="AR-buttons">
+					<button name="approve" value="{{url}}" class="admin button-approve">Approve</button>
+					<button name="reject" value="{{url}}" class="admin button-reject">Reject</button>
+				</div>
 			</div>
 			{{/each}}
 			{{#if profile.owner}}
@@ -64,11 +66,12 @@
 
 <template name="reset">
 	<form id="reset-form" action="action" class="register">
-	    <input type="password" id="pass-one" placeholder="type new password">
+		<label for="pass-one">Type new password</label>
+	    <input type="password" id="pass-one" name="pass-one">
+	    <label for="pass-one">and again...</label>
+	   	<input type="password" id="pass-two" name="pass-two">
 	    <br>
-	   	<input type="password" id="pass-two" placeholder="password again">
-	    <br>
-	    <input type="submit" id="reset-password" value="set password">
+	    <input type="submit" id="reset-password" value="set password" class="reg-button">
 	    <p></p>
 	</form>	
 </template>

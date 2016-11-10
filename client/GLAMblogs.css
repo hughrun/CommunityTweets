@@ -1,14 +1,22 @@
 /**********************************/
 /* Basics */
 /**********************************/
+
+html {
+	height: 100%;
+}
+
 body {
-	font-family: 'Dosis';
-	color: #fff;
-	background-color: #3a3a3a;
-	font-size: 1.2em;
-	padding: 0 5px;
-	width: 100%;
-	margin: auto;
+	font-family: 'Open Sans', sans-serif;
+	color: #3a3a3a;
+	background-color: #fff;
+	font-size: 1.4em;
+	min-height: 100%;
+	-webkit-display: flex;
+	display: flex;
+	-webkit-flex-direction: column;
+	flex-direction: column;
+	margin:0;
 }
 
 a {
@@ -23,26 +31,28 @@ form {
 input, 
 select,
 button {
-	margin:  0.5em;
+	margin: 0.5em 0;
 	font-family: 'Dosis';
-	color: #fff;
-	background-color: #3a3a3a;
-	font-size: 0.8em;
-	border: 1px solid #ff748c;
+	background-color: #ffd5dc;
+	background-color: rgba(255,116,140,0.3);
+	color: #3a3a3a;
+	font-size: 1em;
+	border: 0;
 	border-radius: 5px;
-	text-align: center;
+	outline:none;
 } 
 
-button {
-	font-size: 1em;
-	color: #3a3a3a;
-	background-color: #ff748c;
+button, input[type="submit"] {
+	background: #fff;
+	border: 3px solid #ff748c;
+	text-align: center;
 }
 
 .wrapper {
+	width:90%;
+	min-height: 100vh;
+	padding: 0 5vw;	
 	margin: auto;
-	width: 90%;
-	padding: 2%;
 }
 
 /**********************************/
@@ -60,7 +70,8 @@ button {
 }
 
 h1, h2, h3, h4, h5, h6 {
-	font-family: 'Amaranth', 'Times New Roman', Serif;
+	/*font-family: 'Amaranth', 'Times New Roman', Serif;*/
+	font-family: 'Nova Mono', monospace;
 	font-weight: 400;
 	color: #fff;
 }
@@ -71,6 +82,10 @@ h1 {
 
 hr {
 	border-color: #ff748c;
+}
+
+.site-header {
+	text-align: center;
 }
 
 /**********************************/
@@ -282,51 +297,24 @@ hr {
 /**********************************/
 
 .menu {
-	margin: auto;
+	display: flex;
+	flex-direction: row;
+	justify-content: center;
+	align-items: flex-start;
+	flex-wrap:wrap;
 }
 
-.counter-labels {
-	float: left;
-	margin: 5px;
-	width: 3em;
-	text-align: left;
-}
-
-.counter-name {
-	height: 4em;
-	line-height: 4em;
-	white-space: nowrap;
-	float:left;
-}
-
-.counter {
-	float: left;
-	margin: 5px;
-	width: 5em;
-	text-align: left;
-	margin-right: 1em;
-}
-
-.counter-circle {
-	float:right;
-	border: 1px solid #ff748c;
-	background-color: #ff748c;
-	width:4em;
-	height:4em;
-	border-radius: 2em;
-	-moz-border-radius: 2em;
-	-webkit-border-radius: 2em;
+.home-option {
+	flex-grow:1;
+	flex-shrink: 1;
+	flex-basis: auto;
+	margin: 1.5vw;
 	text-align: center;
-	line-height: 4em;
-	white-space: nowrap;
+	font-family: 'Nova Mono', monospace;
 }
 
 .home-icon {
-	float: left;
-	margin: 5px;
-	width: 25%;
-	text-align: center;
-	font-family: 'Amaranth';
+	width:200px;
 }
 
 /**********************************/
@@ -343,32 +331,44 @@ hr {
 }
 
 .approval-list {
-	border: 1px solid #ff748c;
-	border-radius: 5px;
 	margin-bottom: 1em;
-	padding: 0.5em;
+	border: 1px solid #3a3a3a;
+	border-radius: 5px;
+}
+
+.approval-list-item {
+	border-radius: 5px 5px 0 0;
+	padding: 1em;
 }
 
 button.admin {
-	float:right;
-	margin:0.5em;
 	font-size: 0.9em;
-	background-color: #3a3a3a;
-	color: #ff748c;
-	border-color: #fff;
+	line-height:2em;
+	margin:0;
+	border:0;
 	cursor: pointer;
+	/*border-radius: 0;*/
+	padding:0;
+	flex:1;
 }
 
-button.forgot {
-	color: #fff;
-	background-color: #3a3a3a;
-	font-size: 0.8em;
+.button-approve {
+	background: #BEFBD5;
+	border-radius: 0 0 0 6px;
 }
 
-.email {
-	margin: 0 2em;
+.button-reject {
+	background: #FFB2B2;
+	border-radius: 0 0 6px;
+}
+
+.monospace {
 	color: #ff748c;
-	font-family: monospace;
+	font-family: 'Nova Mono', monospace;
+}
+
+.approval-feed {
+	font-size: 0.8em;
 }
 
 label.error {
@@ -379,12 +379,9 @@ label.error {
 	font-size: 0.8em;
 }
 
-.register input {
-	border-color: #fff;
-}
-
 .AR-buttons {
-	line-height: 2em;
+	display: flex;
+	align-items: center;
 }
 
 /**********************************/
@@ -409,7 +406,7 @@ label.error {
 
 .article-tags {
 	font-size: 0.6rem;
-	color: #fff;
+	color: #3a3a3a;
 	padding: 2px;
 	text-transform: uppercase;
 	cursor: pointer;
@@ -445,7 +442,7 @@ label.error {
 .top-ten {
 	margin:1rem 20%;
 	padding: 0.5rem 1rem;
-	border: 1px solid #fff;
+	border: 1px solid #3a3a3a;
 	border-radius: 5px;
 }
 
@@ -465,10 +462,10 @@ label.error {
 }
 
 .search-input {
-	border:2px solid #ff748c;
-	border-radius: 6px;
-	width: 60%;
-	font-size: 2em;
+	border: 0;
+	background-color: #ffd5dc;
+	background-color: rgba(255,116,140,0.3);
+	width: 100%;
 }
 
 .tag-header {
@@ -481,15 +478,85 @@ label.error {
 	text-align: center;
 }
 
+.find-blogs-select {
+	text-align: center;
+}
+
+/**********************************/
+/* startup */
+/**********************************/
+
+.startup {
+	text-align: center;
+	border-radius: 8px;
+	width:30rem;
+}
+
+.owner {
+	border: 1px solid #ff748c;
+	border-radius: 5px;
+	padding: 1em;
+	text-align: center;
+}
+
+.startup label,
+.register label {
+	display:block;
+}
+
+.startup input,
+.register input {
+	width:100%;
+}
+
+/*#username {
+	color: #ff748c;
+	font-style: italic;
+}*/
+
+.reg-button {
+	float:right;
+}
+
+#create-account,
+#reset-password {
+	width:auto;
+}
+
+/**********************************/
+/* register */
+/**********************************/
+
+#register-form {
+	font-size: 1.8rem;
+}
+
+#register-form input {
+	width: 40rem;
+}
+
+#type {
+	width: 40rem;
+}
+
+.explanation {
+	font-size: 0.5em;
+}
+
 /**********************************/
 /* footer */
 /**********************************/
 
 .footer {
-	margin: 4em auto 0;
 	text-align: center;
 	font-size: 0.8em;
-	color: #999;
+	background: #999;
+	padding: 1em;
+	flex: 1;	
+}
+
+.footer a {
+	color: #fff;
 }
 
 .footer-wrap {
@@ -505,105 +572,15 @@ label.error {
 	border: none; 
 }
 
-.owner {
-	border: 1px solid #ff748c;
-	border-radius: 5px;
-	padding: 1em;
-}
 
-.owner-button {
-	border-color: #3a3a3a;
-}
-
-.startup {
-	border: 3px solid #FECB24;
-	border-radius: 8px;
-	color: #3a3a3a;
-	background-color: #FECB24;
-	padding:0 1em;
-}
-
-.startup input {
-	border-color: #3a3a3a;
-	color:#fff;
-	background-color: #3a3a3a;
-}
-
-#username {
-	color: #ff748c;
-	font-style: italic;
-}
 
 /* RESPONSIVE */
 
-@media screen and (min-device-width: 601px) and (max-device-width: 1023px) {
+/* TODO - make all function responsive */
 
-	body {
-	padding: 1px;
-	font-size: 150%;
-	}
-
-}
-
-/* this bit still needs some work for the admin interface */
-
-@media screen and (max-device-width: 600px) {
-
-	body {
-		padding: 1px;
-		font-size: 200%;
-	}
-
-	input,
-	select,
-	button {
-		font-size: 1em;
-	}
-
-	input {
-		width: 90%;
-	}
-
-	button.admin {
-		margin-left: 50%;
-	}
-
-	.buttons {
-		height:8em;
-	}
-
-	.approval-list {
-		position:relative;
-		height:8em;
-		overflow-wrap: break-word;
-  		word-wrap: break-word;
-	}
-
-	.AR-buttons {
-		position:absolute;
-		bottom: 1em;
-		right: 1em;
-	}
-
+@media screen and (max-width: 600px) {
+	
 	.home-icon {
-		float: none;
-		margin: none;
-		width: 90%;
-
+		width: 30vw;
 	}
-
-	.listing {
-		width: 90%;
-		margin: 0.5em 0;
-	}
-
-	.wrapper {
-		float: left;
-	}
-
-	.top-ten {
-	margin: 1rem auto;
-	padding: 0.5rem 1rem;
-	}
-
 }

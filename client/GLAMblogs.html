@@ -1,16 +1,15 @@
 
 <Template name="main">
 <head>
-  <title>GLAMblogs</title>
+<meta name="viewport" content="width=device-width" />
+<link href="https://fonts.googleapis.com/css?family=Nova+Mono|Open+Sans" rel="stylesheet">
 </head>
-<body>
-	{{> header}}
 	<div class="wrapper">
+		{{> header}}
 		{{> yield}}
 	</div>
 	<div class="clear-float"></div>
 	{{> footer}}
-</body>
 </template>
 
 <template name="loading">
@@ -28,85 +27,118 @@
 </template>
 
 <template name="header">
-	<a href="/"><h1>GLAM blogs of Australia</h1></a>
-	<hr />
+	<a href="/"><h1 class="site-header">ausGLAMblogs</h1></a>
 </template>
 
 <template name="startup">
 	<div class="startup">
-	<p>You're up! Let's get started by registering your owner account.
-	<br>Click the link on the email you receive, and you'll be ready to go.
-	</p>
+	<p>You're up!</p> 
+	<p>Let's get started by registering your owner account. Click the link on the email you receive, and you'll be ready to go.</p>
 	<form id="startup-form" action="action" class="register">
-	    <input type="email" name="email" id="email1" placeholder="email address" class="required">
+		<label for="email">email address</label>
+	    <input type="email" name="email" id="email1" class="required">
 	    <br>
-	    <input type="email" name="email_again" id="email2" placeholder="confirm email address" class="required">
+	    <label for="email_again">and again...</label>
+	    <input type="email" name="email_again" id="email2" class="required">
 	    <br>
-	    <input type="submit" id="create-account" value="Register Owner">
+	    <input type="submit" id="create-account" class="reg-button" value="Register Owner">
 	    <p></p>
 	</form>
 	</div>
 </template>
 
 <template name="home">	
+	<section class="menu">
+		<div class="home-option">
+			<a href="findBlogs">
+				<img class="home-icon" src="/images/blog.svg">
+			</a>
+			<br>
+			<div class="monospace">{{totalBlogs}}</div>
+			<div>Blogs</div>  
+		</div>
+
+		<div class="home-option">
+			<a href="latest">
+				<img class="home-icon" src="/images/article.svg">
+			</a>
+			<br>
+			<div class="monospace">{{totalArticles}}</div>
+			<div>Articles</div>
+		</div>
+
+		<div class="home-option">
+			<a href="tagsList">
+				<img class="home-icon" src="/images/tag.svg">
+			</a>
+			<br>
+			<div class="monospace">{{totalTags}}</div> 
+			<div>Tags</div> 
+		</div>
+		<div class="home-option">
+			<a href="searchBox">
+				<img class="home-icon" src="/images/search.svg" alt="search and browseblogs">
+			</a>		
+			<div>Search</div>
+			<div>by keyword</div>
+		</div>		
+		<div class="home-option">
+			<a href="registerblog">
+				<img class="home-icon" src="/images/register.svg" alt="register a blog">
+			</a>
+			<div>Register</div>
+			<div>a blog</div>
+		</div>	
+		<div class="home-option">
+			<a href="https://twitter.com/ausglamblogs">
+				<img class="home-icon" src="/images/robot2.svg" alt="link to @ausglamblogs on twitter">
+			</a>
+			<div>Follow</div>
+			<div>on Twitter</div>
+		</div>
+		<div class="home-option">
+			<a href="opml">
+				<img class="home-icon" src="/images/download.svg" alt="OPML file">
+			</a>
+			<div>Download</div>
+			<div>OPML file</div>
+		</div>
+		<div class="home-option">
+			<a href="login">
+				<img class="home-icon" src="/images/login.svg" alt="admin interface">
+			</a>
+			<div>Login</div>
+			<div>as admin</div>
+		</div>
+		<div class="clear-float"></div>				
+	</section>
 	<p>
 	Hi there. You can use this app to register and search for blogs by Australian GLAM people. We use the list of feeds to power <a href="https://twitter.com/ausglamblogs">@AusGLAMBlogs</a>. Registrations are subject to an approval process so we can keep our feed clean.
 	</p>
 	<p>
 	If you have any questions or suggestions about this service contact us at 
-	<span class="email">hello AT newcardigan DOT org</span>
+	<div class="monospace">hello [AT] newcardigan [DOT] org</div>
 	</p>
-
-	<section class="menu">
-		<div class="counter-labels">
-		<div class="counter-name">Blogs:</div>
-		<div class="clear-float"></div>
-		<div class="counter-name">Articles:</div>
-		<div class="clear-float"></div>
-		<div class="counter-name">Tags:</div>
-	</div>
-		<div class="counter">
-			<div class="counter-circle">{{totalBlogs}}</div>
-			<div class="clear-float"></div>
-			<div class="counter-circle">{{totalArticles}}</div>
-			<div class="clear-float"></div>
-			<div class="counter-circle">{{totalTags}}</div>
-		</div>	
-		<div class="home-icon">
-			<a href="/registerblog">
-				<img src="/images/reg.svg" alt="register a blog">
-				<br>
-				Register
-			</a>
-		</div>	
-		<div class="home-icon">
-			<a href="latest">
-				<img src="/images/search.svg" alt="search and browseblogs">
-				<br>
-				Discover
-			</a>
-		</div>
-		<div class="home-icon">
-			<a href="https://twitter.com/ausglamblogs">
-				<img src="/images/robot.svg" alt="link to @ausglamblogs on twitter">
-				<br>
-				Follow
-			</a>
-		</div>
-		<div class="clear-float"></div>
-	</section>
 </template>
 
 <template name="footer">
 	<footer class="footer">
-		<hr />
-		a <a href="http://newcardigan.org">newCardigan</a> project
-		<br>
-		<button class="menu-button" id="admin-button">admin</button>
-
-<!-- Piwik -->
-
-<!-- End Piwik Code -->
-		
+		a <a href="https://newcardigan.org">newCardigan</a> project built by <a href="https://www.hughrundle.net">Hugh Rundle</a>
+		<!-- Piwik -->
+		<script type="text/javascript">
+		  var _paq = _paq || [];
+		  _paq.push(["setDomains", ["*.glamblogs.newcardigan.org","*.glamblogs.newcardigan.org"]]);
+		  _paq.push(['trackPageView']);
+		  _paq.push(['enableLinkTracking']);
+		  (function() {
+		    var u="//analytics.hugh.li/";
+		    _paq.push(['setTrackerUrl', u+'piwik.php']);
+		    _paq.push(['setSiteId', '4']);
+		    var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+		    g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
+		  })();
+		</script>
+		<noscript><p><img src="//analytics.hugh.li/piwik.php?idsite=4" style="border:0;" alt="" /></p></noscript>
+		<!-- End Piwik Code -->
 	</footer>
 </template>
