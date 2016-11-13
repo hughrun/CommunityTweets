@@ -1,25 +1,23 @@
 <template name="registerBlog">
+	<header>
+		{{> header2}}
+		{{> header}}
+	</header>
 	<form id="register-form">
 		<label for="url">Blog URL:</label>
 		<div class="explanation">Full URL including http://</div>
 		<input type="url" id="url" name="url" required>
-		<br>
 		<label for="feed">Blog RSS feed:</label>
 		<div class="explanation">Usually http://yourblogurl/rss or http://yourblogurl/feed.</div> 
 		<div class="explanation">If you use Medium it will be https://medium.com/feed/@username</div>
 		<input type="url" id="feed" name="feed" required>
-		<br>
-		<label for="author">Author name:</label>
-		<br>		
+		<label for="author">Author name:</label>		
 		<input type="text" id="author" name="author">
-		<br>
 		<label for="twHandle">Twitter handle:</label>
 		<div class="explanation">Optional. If provided this will be used instead of your name when tweeting blog posts.</div>
 		<div class="explanation">Include the @ symbol.</div>
 		<input type="text" id="twHandle" name="twHandle">
-		<br>
 		<label for="type">Type: </label>
-		<br>
 		<select id="type" name="type" required>
 			<option id="none" disabled selected>choose</option>
 			<option id="galleries" value="galleries">galleries</option>
@@ -29,12 +27,15 @@
 			<option id="GLAM" value="GLAM">general GLAM</option>
 			<option id="DH" value="DH">digital humanities</option>
 		</select>
-		<br>
 		<button class="reg-button">Register!</button>
 	</form>
 </template>
 
 <template name="success">
+	<header>
+		{{> header2}}
+		{{> header}}
+	</header>
 	<p>
 		Success! Thanks for registering.
 	</p>

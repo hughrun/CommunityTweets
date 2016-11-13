@@ -26,6 +26,13 @@ a {
 
 form {
 	text-align: center;
+	width:50%;
+	margin: 0 auto;
+	font-size: 1.8rem;
+}
+
+label {
+	display: block;
 }
 
 input, 
@@ -40,12 +47,18 @@ button {
 	border: 0;
 	border-radius: 5px;
 	outline:none;
+	width:100%;
 } 
 
 button, input[type="submit"] {
 	background: #fff;
 	border: 3px solid #ff748c;
 	text-align: center;
+	font-size: 1.4rem;
+	cursor: pointer;
+	width:auto;
+	float:right;
+	margin-left: 0.5rem;
 }
 
 .wrapper {
@@ -84,10 +97,6 @@ hr {
 	border-color: #ff748c;
 }
 
-.site-header {
-	text-align: center;
-}
-
 /**********************************/
 /* utilities */
 /**********************************/
@@ -107,6 +116,37 @@ hr {
 
 .pink {
 	color: #ff748c;
+}
+
+.monospace {
+	color: #ff748c;
+	font-family: 'Nova Mono', monospace;
+}
+
+label.error {
+	background-color: #ff748c;
+	color: #3a3a3a;
+	padding:3px;
+	border-radius: 5px;
+	font-size: 0.8em;
+}
+
+/**********************************/
+/* header */
+/**********************************/
+
+.site-header {
+	text-align: center;
+	margin-top: 0em;
+}
+
+.header2 {
+	text-align: center;
+	margin-top: 0.5em;
+}
+
+.header-icon {
+	height: 2em;
 }
 
 /**********************************/
@@ -347,7 +387,6 @@ button.admin {
 	margin:0;
 	border:0;
 	cursor: pointer;
-	/*border-radius: 0;*/
 	padding:0;
 	flex:1;
 }
@@ -362,26 +401,43 @@ button.admin {
 	border-radius: 0 0 6px;
 }
 
-.monospace {
+.owner {
+	border: 1px solid #ff748c;
+	border-radius: 5px;
+	padding: 1em;
+	margin: 2em 0;
+	text-align: center;
+}
+
+.owner p {
+	text-align: left;
+	font-style: italic;
+}
+
+.other-admins {
+	text-align: center;
+}
+
+.other-admins * {
+	margin-top: 0;
+}
+
+.other-admin-email {
+	float: left;
 	color: #ff748c;
-	font-family: 'Nova Mono', monospace;
 }
 
 .approval-feed {
 	font-size: 0.8em;
 }
 
-label.error {
-	background-color: #ff748c;
-	color: #3a3a3a;
-	padding:3px;
-	border-radius: 5px;
-	font-size: 0.8em;
-}
-
 .AR-buttons {
 	display: flex;
 	align-items: center;
+}
+
+.forgot {
+	text-align: center;
 }
 
 /**********************************/
@@ -465,7 +521,7 @@ label.error {
 	border: 0;
 	background-color: #ffd5dc;
 	background-color: rgba(255,116,140,0.3);
-	width: 100%;
+	width: 40rem;
 }
 
 .tag-header {
@@ -492,52 +548,14 @@ label.error {
 	width:30rem;
 }
 
-.owner {
-	border: 1px solid #ff748c;
-	border-radius: 5px;
-	padding: 1em;
-	text-align: center;
-}
-
 .startup label,
 .register label {
 	display:block;
 }
 
-.startup input,
-.register input {
-	width:100%;
-}
-
-/*#username {
-	color: #ff748c;
-	font-style: italic;
-}*/
-
-.reg-button {
-	float:right;
-}
-
-#create-account,
-#reset-password {
-	width:auto;
-}
-
 /**********************************/
 /* register */
 /**********************************/
-
-#register-form {
-	font-size: 1.8rem;
-}
-
-#register-form input {
-	width: 40rem;
-}
-
-#type {
-	width: 40rem;
-}
 
 .explanation {
 	font-size: 0.5em;
@@ -558,21 +576,6 @@ label.error {
 .footer a {
 	color: #fff;
 }
-
-.footer-wrap {
-	clear:both;
-}
-
-.menu-button {
-	float:right;
-	font-family: 'Dosis';
-	font-size: 1em;
-	color: #ff748c;
-	background-color: #3a3a3a;
-	border: none; 
-}
-
-
 
 /* RESPONSIVE */
 

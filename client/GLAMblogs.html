@@ -2,10 +2,11 @@
 <Template name="main">
 <head>
 <meta name="viewport" content="width=device-width" />
+<!-- TODO download fonts directly (?) -->
 <link href="https://fonts.googleapis.com/css?family=Nova+Mono|Open+Sans" rel="stylesheet">
 </head>
 	<div class="wrapper">
-		{{> header}}
+<!-- TODO have new header for non-home pages with smaller version of icons etc	 -->
 		{{> yield}}
 	</div>
 	<div class="clear-float"></div>
@@ -30,6 +31,51 @@
 	<a href="/"><h1 class="site-header">ausGLAMblogs</h1></a>
 </template>
 
+<template name="header2">
+<div class="header2">
+	<span class="header-icons">	
+			<a href="findBlogs">
+				<img class="header-icon" src="/images/blog.svg">
+			</a>
+	</span>
+	<span class="header-icons">	
+			<a href="latest">
+				<img class="header-icon" src="/images/article.svg">
+			</a>
+	</span>
+	<span class="header-icons">	
+			<a href="tagsList">
+				<img class="header-icon" src="/images/tag.svg">
+			</a>
+	</span>	
+	<span class="header-icons">	
+			<a href="searchBox">
+				<img class="header-icon" src="/images/search.svg" alt="search and browse blogs">
+			</a>
+	</span>	
+	<span class="header-icons">	
+			<a href="registerblog">
+				<img class="header-icon" src="/images/register.svg" alt="register a blog">
+			</a>
+	</span>	
+	<span class="header-icons">	
+			<a href="https://twitter.com/ausglamblogs">
+				<img class="header-icon" src="/images/robot2.svg" alt="link to @ausglamblogs on twitter">
+			</a>
+	</span>	
+	<span class="header-icons">	
+			<a href="opml">
+				<img class="header-icon" src="/images/download.svg" alt="OPML file">
+			</a>
+	</span>
+	<span class="header-icons">	
+			<a href="login">
+				<img class="header-icon" src="/images/login.svg" alt="admin interface">
+			</a>
+	</span>
+</div>			
+</template>
+
 <template name="startup">
 	<div class="startup">
 	<p>You're up!</p> 
@@ -47,7 +93,10 @@
 	</div>
 </template>
 
-<template name="home">	
+<template name="home">
+	<header>
+		{{> header}}
+	</header>
 	<section class="menu">
 		<div class="home-option">
 			<a href="findBlogs">
@@ -77,7 +126,7 @@
 		</div>
 		<div class="home-option">
 			<a href="searchBox">
-				<img class="home-icon" src="/images/search.svg" alt="search and browseblogs">
+				<img class="home-icon" src="/images/search.svg" alt="search and browse blogs">
 			</a>		
 			<div>Search</div>
 			<div>by keyword</div>
@@ -116,8 +165,7 @@
 	Hi there. You can use this app to register and search for blogs by Australian GLAM people. We use the list of feeds to power <a href="https://twitter.com/ausglamblogs">@AusGLAMBlogs</a>. Registrations are subject to an approval process so we can keep our feed clean.
 	</p>
 	<p>
-	If you have any questions or suggestions about this service contact us at 
-	<div class="monospace">hello [AT] newcardigan [DOT] org</div>
+	If you have any questions or suggestions about this service <a href="https://newcardigan.org/about/">contact us</a> - we'd love to hear your ideas.
 	</p>
 </template>
 

@@ -1,4 +1,8 @@
 <template name="admin">
+	<header>
+		{{> header2}}
+		{{> header}}
+	</header>
 	{{#if currentUser}}
 		<div class="admin-head">
 			hello {{emails.[0].address}}!
@@ -16,13 +20,17 @@
 			{{/each}}
 			{{#if profile.owner}}
 				<div class="owner">
-				<p><i>You are the owner - with great power comes great responsibility!</i></p>
+				<p>You are the owner - with great power comes great responsibility!</p>
 				{{#each users}}
 					{{#if notOwner}}
-					<p>{{emails.[0].address}}
-					<button class="admin" name="delete-user" value="{{emails.[0].address}}">Delete User</button>
-					<button class="admin" name="make-owner" value="{{emails.[0].address}}">Transfer Ownership</button>
-					</p>
+					<div class="other-admins">
+					<span class="other-admin-email">
+					{{emails.[0].address}}
+					</span>
+					<button class="admin-owner" name="delete-user" value="{{emails.[0].address}}">Delete User</button>
+					<button class="admin-owner" name="make-owner" value="{{emails.[0].address}}">Transfer Ownership</button>
+					</div>
+					<div class="clear-float"></div>
 					{{/if}}
 				{{/each}}
 				</div>
@@ -34,37 +42,54 @@
 </template>
 
 <template name="login">
+	<header>
+		{{> header2}}
+		{{> header}}
+	</header>
 	<form id="login-form" name="login" action="action" class="login">
-	    <input name="email" placeholder="email" class="required">
-	    <br>
-	    <input type="password" name="password" placeholder="password" class="required">
-	    <br>
+	    <label for="email">Email</label>
+	    <input name="email" class="required">
+	    <label for="password">Password:</label>
+	    <input type="password" name="password" class="required">
+	    <div class="login-buttons">
 	    <input type="submit" id="login-button" value="Sign in">
 	    <button class="forgot" id="forgot">iForgot</button>
-	    <p></p>
+	    </div>
 	</form> 
 </template>
 
 <template name="register">
+	<header>
+		{{> header2}}
+		{{> header}}
+	</header>
 	<form id="register-form" action="action" class="register">
-	    <input type="email" name="email" id="email1" placeholder="email address" class="required">
-	    <br>
-	    <input type="email" name="email_again" id="email2" placeholder="confirm email address" class="required">
-	    <br>
+		<label for="email">Email</label>
+	    <input type="email" name="email" id="email1" class="required">
+	    <label for="email_again">...and again</label>
+	    <input type="email" name="email_again" id="email2" class="required">
 	    <input type="submit" id="create-account" value="Register User">
 	    <p></p>
 	</form>
 </template>
 
 <template name="removeListing">
+	<header>
+		{{> header2}}
+		{{> header}}
+	</header>
 	<form id="remove-listing" action="action">
 		<p>Please note you need to include the full protocol - 'http' won't match 'https'</p>
-		<input type="url" id="url" name="url" placeholder="http://blog.com" size="60" required>
+		<input type="url" id="url" name="url" required>
 		<button id="delete">Delete</button>
 	</form>
 </template>
 
 <template name="reset">
+	<header>
+		{{> header2}}
+		{{> header}}
+	</header>
 	<form id="reset-form" action="action" class="register">
 		<label for="pass-one">Type new password</label>
 	    <input type="password" id="pass-one" name="pass-one">
@@ -77,5 +102,11 @@
 </template>
 
 <template name="forgot">
-	Sorry about your shit memory. Click the link in your email to reset your password.
+	<header>
+		{{> header2}}
+		{{> header}}
+	</header>
+	<section>
+		<div class="forgot">Sorry about your shit memory. Click the link in your email to reset your password.</div>
+	</section>
 </template>
