@@ -4,6 +4,7 @@
 
 html {
 	height: 100%;
+	background: #ff748c;
 }
 
 body {
@@ -24,7 +25,8 @@ a {
 	text-decoration: none;
 }
 
-form {
+form,
+.search {
 	text-align: center;
 	width:50%;
 	margin: 0 auto;
@@ -68,6 +70,10 @@ button, input[type="submit"] {
 	margin: auto;
 }
 
+ul {
+	padding:0;
+}
+
 /**********************************/
 /* Text and fonts */
 /**********************************/
@@ -83,10 +89,9 @@ button, input[type="submit"] {
 }
 
 h1, h2, h3, h4, h5, h6 {
-	/*font-family: 'Amaranth', 'Times New Roman', Serif;*/
 	font-family: 'Nova Mono', monospace;
 	font-weight: 400;
-	color: #fff;
+	color: #3a3a3a;
 }
 
 h1 {
@@ -366,8 +371,6 @@ label.error {
 	border-radius: 5px;
 	text-align: center;
 	padding: 2px;
-	color: #3a3a3a;
-	background-color: #fff	;
 }
 
 .approval-list {
@@ -454,6 +457,12 @@ button.admin {
 	float:left;
 	overflow-wrap: break-word;
   	word-wrap: break-word;
+	word-break: break-all; 	
+}
+
+.listing a {
+	overflow-wrap: break-word;
+  	word-wrap: break-word;	
 }
 
 /**********************************/
@@ -521,7 +530,6 @@ button.admin {
 	border: 0;
 	background-color: #ffd5dc;
 	background-color: rgba(255,116,140,0.3);
-	width: 40rem;
 }
 
 .tag-header {
@@ -579,11 +587,62 @@ button.admin {
 
 /* RESPONSIVE */
 
-/* TODO - make all function responsive */
-
 @media screen and (max-width: 600px) {
+
+/*basics*/
+
+	.wrapper {
+		padding-top: 1em;
+		width: auto;
+	}
+
+	.site-header {
+		font-size: 1.6em;
+	}
 	
 	.home-icon {
 		width: 30vw;
+	}
+
+	form,
+	button,
+	input[type="submit"],
+	.search {
+		width:100%;
+	}
+
+	.header-icon {
+		margin:0.25em;
+	}
+
+/*listings*/
+
+	.tag-header {
+		font-size: 1.4rem;
+	}
+
+	.listing,
+	.top-ten {
+		width:auto;
+		margin: 0.25em 0;
+	}
+
+/*admin*/
+
+	.other-admins {
+		border-top: 1px dashed #3a3a3a;
+		padding-top: 1em;
+		width:100%;
+	}
+
+	.owner p,
+	.other-admin-email {
+		text-align: center;
+		float: none;
+	}
+
+	.admin-owner {
+		margin:0.5em 0;
+		float:none;
 	}
 }

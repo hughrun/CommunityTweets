@@ -24,11 +24,11 @@
 				{{#each users}}
 					{{#if notOwner}}
 					<div class="other-admins">
-					<span class="other-admin-email">
-					{{emails.[0].address}}
-					</span>
-					<button class="admin-owner" name="delete-user" value="{{emails.[0].address}}">Delete User</button>
-					<button class="admin-owner" name="make-owner" value="{{emails.[0].address}}">Transfer Ownership</button>
+						<span class="other-admin-email">
+						{{emails.[0].address}}
+						</span>
+						<button class="admin-owner" name="delete-user" value="{{emails.[0].address}}">Delete User</button>
+						<button class="admin-owner" name="make-owner" value="{{emails.[0].address}}">Transfer Ownership</button>
 					</div>
 					<div class="clear-float"></div>
 					{{/if}}
