@@ -5,6 +5,7 @@ Blogs = new Meteor.Collection('blogs');
 UnapprovedBlogs = new Meteor.Collection('uBlogs');
 Articles = new Meteor.Collection('articles');
 Tags = new Meteor.Collection('tags');
+Tweets = new Meteor.Collection('tweets');
 
 Meteor.users.deny({
   update: function() {
@@ -68,7 +69,6 @@ Router.route('/reset', {
   },
   onBeforeAction: function(){
     var rT = Session.get('resetToken');
-    var currentUser = Meteor.user();
     // if there's no reset token, redirect to homepage
     if (!rT) {
       Router.go('/');
@@ -81,13 +81,10 @@ Router.route('/reset', {
 Router.route('/registerBlog');
 Router.route('/success');
 Router.route('/findBlogs', {
-  
   loadingTemplate: 'loading',
-
   waitOn: function(){
     return Meteor.subscribe('blogs');
   },
-
   action: function(){
     this.render('findBlogs');
   }
@@ -95,10 +92,10 @@ Router.route('/findBlogs', {
 
 Router.route('/login');
 Router.route('/forgot');
+Router.route('/forgotSent');
 Router.route('/removeListing');
 Router.route('/latest');
 Router.route('/tagView');
-
 Router.route('/tagsList', {
 
   loadingTemplate: 'loading',
@@ -106,7 +103,6 @@ Router.route('/tagsList', {
   waitOn: function(){
     return Meteor.subscribe('tags');
   },
-
   action: function(){
     if (this.ready()){
      this.render('tagsList');      
@@ -134,8 +130,7 @@ Router.route('/admin', {
     return Meteor.user();
   },
   onBeforeAction: function(){
-    var currentUser = Meteor.user();
-    if (currentUser){
+    if (Meteor.userId()){
       this.next();
     } else {
       Router.go('login');
@@ -150,11 +145,10 @@ Router.route('/register', {
     return Meteor.user();
   },
   onBeforeAction: function(){
-    var currentUser = Meteor.user();
-    if (currentUser){
+    if (Meteor.userId()){
       this.next();
     } else {
-      this.render('login');
+      Router.go('login');
     }
   }
 });

@@ -2,263 +2,232 @@
 // ################# This section runs the Twitter bot ##################################
 // ######################################################################################
 
+// npm imports
+import feedparser from 'feedparser-promised';
+import Twit from 'twit';
+
+
 // Set up the twitter app credentials
 
-var twitter = new TwitMaker({
+const T = new Twit({
     consumer_key:         Meteor.settings.TWITTER_CONSUMER_KEY
   , consumer_secret:      Meteor.settings.TWITTER_CONSUMER_SECRET
   , access_token:         Meteor.settings.TWITTER_ACCESS_TOKEN_KEY
   , access_token_secret:  Meteor.settings.TWITTER_ACCESS_TOKEN_SECRET
 });
 
-// require fibres from npm
-var Fiber = Npm.require( "fibers" );
+// ***************************************************************************************************
+//
+// 											** METHODS **
+//
+// ***************************************************************************************************
 
-// Set timeout to loop the whole thing every 10 minutes 600000
-// Here we have to use Meteor.setInterval to replace setInterval from the original bot
-var timerVar = Meteor.setInterval (runBot, 600000); 
+const Announcement = {
+		// trim the article title if it's too long to fit in the tweet
+  title: title => {
+    const itemTitle = (title.length > 70) ? title.substring(0, 70) + "..." : title;
+    return itemTitle;
+  },
+  // create the status for tweeting articles
+  status: (title, name, link, punct) => {
+   return {"status" : Announcement.title(title) + ` ${punct} ${name} ${punct} ${link}`, "link" : link};
+  },
+  // add article to Articles collection
+  prep: (item) => {
+  	// normalise tag names
+	var array = item.categories;
+	var categories = [];
+	array.forEach( x => {
+	  var normalised = x.toLowerCase();
+	  categories.push(normalised);              
+	});
+	// Upsert tags into the Tags collection
+  	categories.forEach( tag => {
+    	Tags.upsert({tag: tag}, {$inc:{total: 1}});
+   });
+	  // Upsert the post into the Articles collection
+	return Articles.upsert({link: item.link}, {$set: {title: item.title, author: item.author, categories: categories, blog: item.meta.title, blogLink: item.meta.link, date: item.pubdate}}, 
+		(err, data) => {
+			if (err) {console.log(`error upserting article  --> ${err}`)};
+		});
+  },
+  // queue tweet status in Tweets collection with appropriate punctuation
+  queue: (title, name, link, punct) => {
+	return Tweets.insert(Announcement.status(title, name, link, punct), (err) => {
+		if (err) {console.error(`error queueing tweet --> ${err}`)};
+	});
+  },
+  // function to post article to Twitter
+  post: (status, link, id) => {
+  	// tweet new blog post
+
+	T.post('statuses/update',
+	   {'status' : status},
+	   // deal with any twitter errors
+	   (error, data, response) => {
+	   	if (error){	
+	     console.error("Twit error with " + status + " --> " + error);
+	   	};
+	});
+
+		 // remove queued tweet after it's posted	 
+			Tweets.remove({"_id" : id});		
+			// Upsert tweet info into Articles collection
+			// Doing it like this means that if the app goes down or otherwise fails it will still... 
+			// ...tweet every post 3 times, at least 6hrs apart.
+		 	// Set a new tweeted date
+			var now = new Date();
+		 Articles.upsert({link: link}, {$set: {"tweeted.date": now}});
+		 // Increment the 'posted' field
+		 return Articles.upsert({link: link}, {$inc: {"tweeted.times": 1}});
+		 },
+};
+
+// ***************************************************************************************************
+// ***************************************************************************************************
+//
+// 										** RUNBOT LOOP **
+//
+// ***************************************************************************************************
+// ***************************************************************************************************
+
+// Set timeout to loop the whole thing every 10 minutes (600000ms)
+
+const timerVar = Meteor.setInterval (runBot, 600000);
+
+console.log('running...');
 
 // When 10 minutes has elapsed, run the bot!
-console.log('running...');
 function runBot() {
+// ***************************************************************************************************	
+// 										** CHECK LISTINGS **		
+// check for any new listings to announce if there are any, announce the first one only
+// this stops us from blasting out a whole bunch at once and triggering the Twitter Police
+// ***************************************************************************************************
 
-// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-// check for any new listings to announce
-// if there are any, announce the first one only
-// this stops us from blasting out a whole bunch at once
-// and triggering the Twitter Police
-// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+	const fresh = Blogs.find({announced: false});
+	if (fresh.count() > 0) {
+	  	var b = Blogs.findOne({announced: false});
+		var id = b._id;
+		var url = b.url;
+		var name = b.twHandle ? b.twHandle : b.author;
+	  	// announce new blog listing
+	  	T.post('statuses/update',
+	    {'status' : `${url} by ${name} has been added to my feed. Nom nom!`},
+	    // deal with any twitter errors
+	    (error, data, response) => {
+	    	if (error) {
+	      		console.error("Twit error for added feed: " + error);
+	    	}
+	    });
+	  	// mark the blog as 'announced'             
+		Blogs.update({_id: id}, {$set:{announced: true}}, (err, data) => {
+			if (err) {
+				console.error("error setting blog to announced: " + err)
+			} else {
+				console.log("updated " + data);
+			}
+		});
+	};
+// ***************************************************************************************************
+// 			** PROCESS NEW POSTS **
+// ***************************************************************************************************
 
-  var fresh = Blogs.find({announced: false});
-  if (fresh.count() > 0) {
-    var b = Blogs.findOne({announced: false});
-    var id = b._id;
-    var url = b.url;
-    var twHandle = b.twHandle;
-    var author = b.author;
-    // tweet
-    if (twHandle) {
-      twitter.post('statuses/update',
-        {'status' : url + ' by ' + twHandle + ' has been added to my feed. Nom nom!'},
-        // deal with any twitter errors
-        function(error, data) {
-          console.dir(error);
-        });
-    } else {
-      twitter.post('statuses/update',
-        {'status' : url + ' by ' + author + ' has been added to my feed. Nom nom!'},
-        // deal with any twitter errors
-        function(error, data) {
-          console.dir(error);
-        });              
-    }
-  Blogs.update({_id: id}, {$set:{announced: true}});
-}
+	// get everything from the Blogs collection
+	const bList = Blogs.find();
+	bList.forEach( blog => {
+		// exclude blogs that haven't been approved yet
+		if (blog.approved !== false) {
+			// parse out the posts in each blog feed
+			feedparser.parse(blog.feed).then( (items) => {
+				// if the feed previously failed, change 'failed' to false
+				// (if it continues to fail it will be update in the catch below)
+				if (blog.failing) {
+					Blogs.update({feed: blog.feed}, {$set: {failing: false}}, (err, data) => {
+						if (err) {console.err(`error ${err}`)
+						} else {
+							console.log(`${data} documents updated`);
+						}
+					});
+				}				
+				items.forEach( (item) => {
+					// if there's a Twitter handle listed in Articles use that as 'name', 
+					// otherwise use the author name from the post
+					var name = blog.twHandle ? blog.twHandle : item.author;
+					// get times
+					var now = new Date();
+					var cutoff = new Date(now - 1.728e+8);
+					var pubdate = new Date(item.pubdate);			
 
-// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-// iterate over the list of blogs
-// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+					// *********************************
+					// 		** NEW POSTS **
+					// *********************************
+					
+					// if it's not already in the Articles collection, upsert data to Articles and Tags
+					var recorded = Articles.findOne({link: item.link});
+					if (!recorded){
+					   	// upsert to collections
+					   	Announcement.prep(item);		
+						// if publication date is within the last 48 hours, queue a tweet
+						// not this also applies to recent articles from newly added feeds
+						if (pubdate > cutoff) {
+					   		var punct = "-";
+					   		Announcement.queue(item.title, name, item.link, punct);
+					   	}
+					// if it IS already in the Articles collection check how many times it's been tweeted  	
+					} else {
+						
+						// *********************************
+						// 		** NEWISH POSTS **
+						//
+						//	i.e. ones we first saw recently 
+						//	that need to be tweeted again.
+						// *********************************
+						
+						//trigger additional tweets at 6, and 12 hours (we already tweeted at 0 hours above)
+						// if there's no 'tweeted' field we simply ignore it
+						if (recorded.tweeted && (recorded.tweeted.times < 3)) {
+							// if the tweeted.date exists and is older than 6 hours ago choose punctuation style
+							// this is a failsafe to stop Twitter blocking 'duplicate' tweets
+							// note for the initial tweet punct is set as '-' (see New Posts above)					
+							if (recorded.tweeted.date < (now - 2.16e+7)) {
+								var punct = (recorded.tweeted.times === 1) ? "|" : "/";
+								// queue tweet
+								Announcement.queue(item.title, name, item.link, punct);
+							}
+						}
+					}
+				});
+			}).catch( (error) => {
+				console.error(`error with ${blog.feed} --> ${error}`);
+				if (error === "Error: Not a feed") {
+					Blogs.update({feed: blog.feed}, {$set: {failing: true}}, (err, data) => {
+						if (err) {console.err(`error ${err}`)
+						} else {
+							console.log(`${data} documents updated`);
+						}
+					});
+				}
+			});
+		}	
+	});  
 
-  // **********************************************************
-  // find any new posts using feedparser
-  // **********************************************************
+	// ***************************************************************************************************
+	//								** CHECK QUEUED TWEETS **
+	//																																				
+	// as with the new blog listings, this is restricted to one every loop (i.e. every ten minutes)
+	// ***************************************************************************************************
 
-  var bList = Blogs.find();
-  bList.forEach(function(blog) {
+	// Get the next tweet in the queue
+	var nextTweet = Tweets.findOne({});
+	// send off to be tweeted
+	if (nextTweet) {
+		Announcement.post(nextTweet.status, nextTweet.link, nextTweet._id);
+	};
 
-// exclude anything that hasn't been approved yet
-if (blog.approved !== false) {
-
-    var feed = blog.feed;
-    var twHandle = blog.twHandle;
-  
-    // set up Feedparser
-    // we use Request and FeedParser
-    var req = Request(feed);
-    var feedparser = new FeedParser();
-
-    // deal with any errors in FeedParser
-    req.on('error', function (error) {
-      console.error('feedparser error: ' + error + 'occured on ' + feed); 
-    });
-
-    req.on('response', function (res) {
-      var stream = this;
-      // deal with any errors in the feed
-      if (res.statusCode != 200) return this.emit('error', new Error('Bad status code'));
-      stream.pipe(feedparser);
-    });
-
-    // deal with any errors in the code
-    feedparser.on('error', function(error) {
-      console.error('feedparser code error: ' + error + ' with ' + feed); 
-    });
-
-    feedparser.on('readable', function() {
-      // This is where the action is! 
-      var stream = this
-          , meta = this.meta
-          , item;
-        while (item = stream.read()) {
-        
-        // Get the date and time right now
-        var dateNow = new Date();
-        // Get the date 11 minutes ago (roughly the last time the bot finished running)
-        // Twitter should reject any duplicate posts that slip through if the code runs faster
-        var lastRun = dateNow - 660000;
-        // Get the date 12 hours ago
-        var dateYesterday = dateNow - 43200000;
-        // Get the date 12 hours and ten minutes ago
-        var dateYPT = dateNow - 43800000;
-
-        // **********************************************************
-        // tweet posts published 12 hour ago
-        // **********************************************************
-
-        // Ensure we only try to post things published between 12 hours and 12 hours 10 minutes ago
-        if (item.date > dateYPT && item.date < dateYesterday){
-
-          // Here we are ensuring that long post titles don't lose the link in the tweet.
-          var titleLength = item.title.length;
-          var itemTitle = item.title;
-          // if the title is shorter than 70 characters, post it to twitter as is.
-          if (titleLength < 70) {
-            if (twHandle) {
-              twitter.post('statuses/update',
-                {'status' : item.title + ' | ' + twHandle + ' | ' + item.link},
-                // deal with any twitter errors
-                function(error, data) {
-                  console.dir(error);
-                }     
-            );
-            } else {
-              twitter.post('statuses/update',
-                {'status' : item.title + ' | ' + item.author + ' | ' + item.link},
-                // deal with any twitter errors
-                function(error, data) {
-                  console.dir(error);
-                }     
-              );              
-            }
-          }
-          // If the title is longer than 70 characters we truncate it.
-          else {
-            trimmedTitle = itemTitle.substring(0, 70);
-            if (twHandle) {
-              twitter.post('statuses/update',
-                {'status' : trimmedTitle + ' | ' + twHandle + ' | ' + item.link},
-                // deal with any twitter errors
-                function(error, data) {
-                  console.dir(error);
-                });
-            } else {
-              twitter.post('statuses/update',
-                {'status' : trimmedTitle + ' | ' + item.author + ' | ' + item.link},
-                // deal with any twitter errors
-                function(error, data) {
-                  console.dir(error);
-                });              
-            }
-          }
-        }
-        // **********************************************************
-          // get posts where the publication date was 11 minutes ago  
-          // or less  (i.e. published since we last ran the bot)
-        // **********************************************************
-        
-        if (item.date > lastRun){
-
-        // **********************************************************
-        // add article data to the Articles and Tags collections
-        // use Fibers so we can interact with the collections inside Feedparser
-        // see https://stackoverflow.com/questions/21151202/async-call-generates-error-cant-wait-without-a-fiber-even-with-wrapasync
-        // add any tags to the Tags collection
-        // **********************************************************
-
-          Fiber(function(){
-            var exists = Articles.find({link: item.link});
-            if (!exists) {
-              var cats = item.categories;
-              cats.forEach(function(x){
-                var tag = x.toLowerCase();
-                Tags.upsert({tag: tag}, {$inc:{total: 1}});
-              });
-            };
-            Fiber.yield();
-          }).run()
-
-          // add the article to the Articles collection
-          Fiber(function(){
-            var now = Date.now();
-            var date = item.pubdate;
-            var array = item.categories;
-            var cats = [];
-            array.forEach(function(x){
-              var normalised = x.toLowerCase();
-              cats.push(normalised);              
-            });
-            Articles.upsert({link: item.link}, {$set: {title: item.title, author: item.author, categories: cats, blog: meta.title, blogLink: meta.link, date: date}});              
-            Fiber.yield();           
-          }).run()
-
-          // **********************************************************
-          // now tweet the new post 
-          // using the same setup we used for 12hr old ones
-          // **********************************************************
-
-          // Here we are ensuring that long post titles don't lose the link in the tweet.
-          var titleLength = item.title.length;
-          var itemTitle = item.title;
-          // if the title is shorter than 70 characters, post it to twitter as is.
-          // we also change the separators so Twitter doesn't reject it as a duplicate post
-          if (titleLength < 70) {
-            if (twHandle) {
-              twitter.post('statuses/update',
-                {'status' : item.title + ' | ' + twHandle + ' | ' + item.link},
-                // deal with any twitter errors
-                function(error, data) {
-                  console.dir(error);
-                });
-            } else {
-              twitter.post('statuses/update',
-                {'status' : item.title + ' | ' + item.author + ' | ' + item.link},
-                // deal with any twitter errors
-                function(error, data) {
-                  console.dir(error);
-                }     
-              );              
-            }           
-          }
-          // If the title is longer than 70 characters we truncate it.
-          // we also change the separators so Twitter doesn't reject it as a duplicate post
-          else {
-            trimmedTitle = itemTitle.substring(0, 70);
-            if (twHandle) {
-              twitter.post('statuses/update',
-                {'status' : trimmedTitle + ' | ' + twHandle + ' | ' + item.link},
-                // deal with any twitter errors
-                function(error, data) {
-                  console.dir(error);
-                }     
-            );
-            } else {
-              twitter.post('statuses/update',
-                {'status' : trimmedTitle + ' | ' + item.author + ' | ' + item.link},
-                // deal with any twitter errors
-                function(error, data) {
-                  console.dir(error);
-                });              
-            } 
-          } 
-        } 
-      }
-    });
-  }
-});
-
-// log when the loop is completed so you know the process has run.
-var dateCompleted = new Date();
-console.log('loop completed at ' + dateCompleted);
+	// log when the loop is completed so you know the process has run.
+	var dateCompleted = new Date();
+	console.log('loop completed at ' + dateCompleted);
 };
 // ######################################################################################
 // ######################## End of Twitter bot section ##################################

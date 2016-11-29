@@ -1,5 +1,8 @@
-//###############
-// Deal with user tokens and authentication
+//############################################################
+// 
+//          User tokens and authentication
+// 
+//############################################################
 
 Accounts.onEnrollmentLink(function(token, done){
   try {
@@ -20,8 +23,13 @@ Accounts.onResetPasswordLink(function(token, done){
     console.log('error:' + e);
   }
 });
-// ################
-// field validation settings using themeteorchef:jquery-validation
+
+//############################################################
+// 
+// Form validation settings using themeteorchef:jquery-validation
+// 
+//############################################################
+
 
 $.validator.setDefaults({
   rules: {
@@ -30,8 +38,7 @@ $.validator.setDefaults({
       email: true
     },
     password: {
-      required: true,
-      minlength: 16
+      required: false,
     },
     url: {
       required: true,
@@ -79,12 +86,21 @@ $.validator.setDefaults({
   }
 });
 
-// ****************
-// EVENTS
-// ****************
+$.validator.addMethod("password_match", function(value, element) {
+  return $('#pass-one').val() === $('#pass-two').val() 
+}, "Passwords don't match!");
 
-// tokens
+//############################################################
+// 
+//                            EVENTS
+// 
+//############################################################
+
+
+// HOME
+
 Template.home.onRendered(function(){
+    window.scrollTo(0, 0);
     var rT = Session.get('resetToken');
     if (rT) {
       Router.go('reset');
@@ -137,81 +153,85 @@ Template.startup.onRendered(function(form){
   });
 });
 
-// BUTTONS
-
-Template.buttons.events({
-  'click #browse-tags': function(event){
-    event.preventDefault();
-    Router.go('tagsList');
-  },
-  'click #search': function(event){
-    event.preventDefault();
-    Router.go('searchBox');
-  },
-  'click #browse-blogs': function(event){
-    event.preventDefault();
-    Router.go('findBlogs');
-  },
-  'click #opml':function(event){
-    event.preventDefault();
-    Router.go('opml');
-  }
-});
-
 // LOGIN
 
-Template.login.events({
-  'submit form': function(event){
-    event.preventDefault();
-  },
-  'click [id=forgot]': function(event){
-    event.preventDefault();
-    var email = $('[name=email]').val();
-    // call this function to send recovery email. 
-    // It calls Accounts.sendResetPasswordEmail, but we don't have to define that. Meteor magic!
-    Accounts.forgotPassword({email: email});
-    Router.go('forgot');
+Template.login.onRendered(() => {
+  window.scrollTo(0, 0);
+  document.getElementById("login-email").focus();
+  if (Meteor.userId()) {
+     Router.go('admin');
+  } else {
+    var validator = $('.login').validate({
+      wrapper: "div",
+      submitHandler: function(event){
+        var email = $('[name=email]').val();
+        var password = $('[name=password]').val();
+        Meteor.loginWithPassword(email, password, function(error){
+          if (error){
+            // careful with this, it needs to be unclear which one is wrong to help prevent phishing
+            if (error.reason == "User not found"){
+              validator.showErrors({
+              password: "Wrong password, or user not found"   
+              });
+            }
+            if (error.reason == "Incorrect password"){
+              validator.showErrors({
+                 password: "Wrong password, or user not found" 
+              });
+            }
+            else {
+              validator.showErrors({
+                 password: "Error: are you using an old sign-in token?"
+              });
+            }
+          } else {
+            var currentRoute = Router.current().route.getName();
+              if (currentRoute == "login"){
+                Router.go('admin');
+              }
+            }
+        });
+          // clear any reset tokens so you can still navigate around if you change your mind abour resetting.
+          Session.set('resetToken', '');
+      }
+    });    
   }
 });
-Template.login.onRendered(function(){
-  var currentUser = Meteor.user();
-  var validator = $('.login').validate({
-    wrapper: "div",
-    submitHandler: function(event){
-      var email = $('[name=email]').val();
-      var password = $('[name=password]').val();
-      Meteor.loginWithPassword(email, password, function(error){
-        if (error){
-          // careful with this, it needs to be unclear which one is wrong to help prevent phishing
-          if (error.reason == "User not found"){
-            validator.showErrors({
-            password: "Wrong password, or user not found"   
-            });
+
+Template.login.events({
+  'click #forgot': (event) => {
+    event.preventDefault();
+    Router.go('forgot');
+  }
+})
+
+// FORGOT PASSWORD
+
+Template.forgot.onRendered( () => {
+    var validator = $('.login').validate({
+      wrapper: "div",
+      rules: {
+        password: {
+          required: false
+        }
+      },
+      submitHandler: () => {
+        // call this function to send recovery email. 
+        // It calls Accounts.sendResetPasswordEmail, but we don't have to define that. Meteor magic!
+        let email = $('[name=email]').val();
+        Accounts.forgotPassword({email: email}, (err) => {
+          if (err) {
+            console.log(err);
+            validator.showErrors();
+          } else {
+            Router.go('forgotSent');
           }
-          if (error.reason == "Incorrect password"){
-            validator.showErrors({
-               password: "Wrong password, or user not found" 
-            });
-          }
-          else {
-            validator.showErrors({
-               password: "Error: are you using an old sign-in token?"
-            });
-          }
-        } else {
-          var currentRoute = Router.current().route.getName();
-            if (currentRoute == "login"){
-              Router.go('admin');
-            }
-          }
-      });
-        // clear any reset tokens so you can still navigate around if you change your mind abour resetting.
-        Session.set('resetToken', '');
-    }
-  });
+        });
+      }
+    })
 });
 
-// REGISTER
+// REGISTER USER
 
   // prevent default behavour
 Template.register.events({
@@ -249,6 +269,8 @@ Template.register.onRendered(function(form){
   });
 });
 
+// REGISTER BLOG
+
 Template.registerBlog.events({
   'submit form':function(event){
     event.preventDefault();
@@ -256,6 +278,8 @@ Template.registerBlog.events({
 });
 
 Template.registerBlog.onRendered(function(form){
+  window.scrollTo(0, 0);
+  document.getElementById("url").focus();
   var validator = $('#register-form').validate({
     wrapper: 'div',
     rules: {
@@ -299,7 +323,6 @@ Template.registerBlog.onRendered(function(form){
             // load/redirect to the 'success' template
             Router.go('success');
             document.getElementById('register-form').reset();
-            document.getElementById('reg-button').blur();
         }
       });    
     }
@@ -309,6 +332,7 @@ Template.registerBlog.onRendered(function(form){
 // ADMIN
 
 Template.admin.onRendered(function(){
+  window.scrollTo(0, 0);
   var user = Meteor.user();
   var owner = user.profile.owner;
   if (owner) {
@@ -377,9 +401,10 @@ Template.admin.events({
         console.log(e);
       }      
     }
-
   }
 });
+
+// REMOVE LISTING
 
 Template.removeListing.events({
   'submit form': function(event){
@@ -395,40 +420,45 @@ Template.removeListing.events({
   }
 });
 
-Template.reset.events({
-  'submit form': function(event){
-    event.preventDefault();
-    var passOne = $('[id=pass-one]').val();
-    var passTwo = $('[id=pass-two]').val();
-    var token = Session.get('resetToken');
-    // we should add a submitHandler here to do this properly, but for now...
-    if (passOne === passTwo){
-      try {
-        Accounts.resetPassword(token, passOne)
+// RESET PASSWORD
+
+Template.reset.onRendered( () => {
+  window.scrollTo(0, 0);
+  document.getElementById('pass-one').focus();
+  var validator = $('#reset-form').validate({
+    wrapper: 'div',
+    rules: {
+      'pass-one': {
+        minlength: 16,
+        required: true
+      },
+      'pass-two': {
+        required: true,
+        'password_match': true
       }
-      catch (e) {
-        console.log('error:' + e)
-      }
-      document.getElementById('reset-form').reset();
-      // clear reset token so you don't end up in a loop.
-      Session.set('resetToken', '');
-      Router.go('admin');
-    } else {
-      console.log("error: passwords don't match");
-      document.getElementById('reset-form').reset();
+    },
+    submitHandler: (event) => {
+      let passOne = $('[id=pass-one]').val();
+      let token = Session.get('resetToken');
+      Accounts.resetPassword(token, passOne, (err) => {
+        if (err) {
+          if (err.reason === "Token expired") {
+            validator.showErrors({
+              'pass-two': "Reset token has expired - have you already used it?"
+            })
+          }
+          validator.showErrors();
+        } else {
+        // clear reset token
+        Session.set('resetToken', '');
+        Router.go('admin'); 
+        }
+      })     
     }
-  } 
+  })
 });
 
-Template.footer.events({
-  'click [id=admin-button]': function(event){
-    event.preventDefault();
-    Router.go('admin');
-    document.getElementById('admin-button').blur();
-  }
-});
-
-// SEARCHING AND BROWSING
+// FIND BLOGS
 
 Template.findBlogs.events({
   'change [id=searchType]': function(event){
@@ -437,6 +467,8 @@ Template.findBlogs.events({
     Session.set('showType', type);
   }
 });
+
+// GET LATEST POSTS
 
 Template.latest.events({
   'click [name=tag]': function(event){
@@ -447,6 +479,12 @@ Template.latest.events({
   }
 });
 
+// SEARCH BOX
+
+Template.searchBox.onRendered(
+    () => document.getElementById("search-box").focus()
+  );
+
 Template.searchBox.events({
   'click [name=tag]': function(event){
     event.preventDefault();
@@ -455,6 +493,8 @@ Template.searchBox.events({
     Router.go('tagView');
   }
 });
+
+// TAG LIST
 
 Template.tagsList.events({
   'click [name=tag]': function(event){
@@ -465,9 +505,30 @@ Template.tagsList.events({
   }
 });
 
-// ****************
-// HELPERS
-// ****************
+//############################################################
+// 
+//                            HELPERS
+// 
+//############################################################
+
+// HOME
+
+Template.home.helpers({
+  'totalBlogs': function () {
+    var allBlogs = Blogs.find(); 
+    return allBlogs.count();
+  },
+  'totalArticles': function () {
+    var allArticles = Articles.find();
+    return allArticles.count()
+  },
+  'totalTags': function () {
+    var allTags = Tags.find();
+    return allTags.count()
+  }
+});
+
+// ADMIN
 
 Template.admin.helpers({
   'approvalList': function(){
@@ -492,8 +553,10 @@ Template.admin.helpers({
   }
 });
 
+// FIND BLOGS
+
 Template.findBlogs.helpers({
-  'showBlogs': function(){
+  'showBlogs': () => {
     var type = Session.get('showType');
     if (type) {
       if (type === "all") {
@@ -505,7 +568,7 @@ Template.findBlogs.helpers({
     return Blogs.find({approved: true}, {sort:{url: 1}})
     } 
   },
-  'cleanURL': function(x) {
+  'cleanURL': (x) => {
     // removes trailing slashes and preceding http etc
     var cleanup = /http:\/\/|https:\/\/|\/+$/ig;
     var cleaned = x.replace(cleanup, "");
@@ -513,20 +576,7 @@ Template.findBlogs.helpers({
   }
 });
 
-Template.home.helpers({
-  'totalBlogs': function () {
-    var allBlogs = Blogs.find(); 
-    return allBlogs.count();
-  },
-  'totalArticles': function () {
-    var allArticles = Articles.find();
-    return allArticles.count()
-  },
-  'totalTags': function () {
-    var allTags = Tags.find();
-    return allTags.count()
-  }
-});
+// LATEST
 
 Template.latest.helpers({
   latest: function(){
@@ -536,7 +586,7 @@ Template.latest.helpers({
 
 Template.searchBox.helpers({
   myAttributes: function(){
-    var attributes = {placeholder: "Find posts about...", class:"search-input", id:"search-box", autofocus:"true"};
+    var attributes = {placeholder: "", class:"search-input", id:"search-box", autofocus:"true"};
     return attributes
   },
     getQuery: function(){
@@ -546,21 +596,38 @@ Template.searchBox.helpers({
   articlesIndex: () => BlogsIndex
 });
 
+// TAGS LIST
+
 Template.tagsList.helpers({
-  tagList: function(){
-    return Tags.find({},{sort:{total:-1}});
+  tagList: () => {
+    // get the tag collection
+    let tags = Tags.find({},{sort:{total:-1}});
+    // turn it into an array
+    let newTags = tags.map((o) => {
+      return o;
+    });
+    // filter out 'uncategorized'
+    var cleanTags = newTags.filter((o) => {
+      if (o.tag !== "uncategorized") {
+        return o;
+      }
+    });
+    return cleanTags;
   },
-  mostPopular: function(){
+  mostPopular: () => {
+    // find the total for the most popular tag so we can use it to calculate percentages in tagPercent
     var mP = Tags.findOne({},{sort:{total:-1}});
     Session.set("topTag", mP.total)
     return mP.total;
   },
-  tagPercent: function(tagTotal){
-    var total = Session.get("topTag");
-    var result = (tagTotal * 100)/total;
-    return result
-  }
+  tagPercent: (n) => {
+      let total = Session.get("topTag");
+      let result = (n * 100)/total;
+      return result;
+  },
 });
+
+// TAG VIEW
 
 Template.tagView.helpers({
   tagBrowse: function(){
@@ -578,7 +645,11 @@ Template.tagView.helpers({
   }
 });
 
-// SUBSCRIPTIONS
+//############################################################
+// 
+//                            SUBSCRIPTIONS
+// 
+//############################################################
 
 Meteor.subscribe('blogs');
 Meteor.subscribe('uBlogs');

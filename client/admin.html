@@ -47,10 +47,11 @@
 		{{> header}}
 	</header>
 	<form id="login-form" name="login" action="action" class="login">
+		<h2>Log In</h2>
 	    <label for="email">Email</label>
-	    <input name="email" class="required">
+	    <input name="email" id="login-email" class="required">
 	    <label for="password">Password:</label>
-	    <input type="password" name="password" class="required">
+	    <input type="password" id="login-password" name="password" class="required">
 	    <div class="login-buttons">
 	    <input type="submit" id="login-button" value="Sign in">
 	    <button class="forgot" id="forgot">iForgot</button>
@@ -64,6 +65,7 @@
 		{{> header}}
 	</header>
 	<form id="register-form" action="action" class="register">
+	<h2>Register a new admin user</h2>	
 		<label for="email">Email</label>
 	    <input type="email" name="email" id="email1" class="required">
 	    <label for="email_again">...and again</label>
@@ -90,7 +92,7 @@
 		{{> header2}}
 		{{> header}}
 	</header>
-	<form id="reset-form" action="action" class="register">
+	<form id="reset-form" name="reset" action="action" class="register">
 		<label for="pass-one">Type new password</label>
 	    <input type="password" id="pass-one" name="pass-one">
 	    <label for="pass-one">and again...</label>
@@ -102,6 +104,23 @@
 </template>
 
 <template name="forgot">
+	<header>
+		{{> header2}}
+		{{> header}}
+	</header>
+	<section>
+	<form id="forgot-form" name="forgo" action="action" class="login">
+		<h3>Where should we send your login code, forgetful?</h3>
+	    <label for="email">Email</label>
+	    <input name="email" id="forgot-email" class="required">
+	    <div class="login-buttons">
+	    <input type="submit" id="login-button" value="Send it!">
+	    </div>
+	</form> 
+	</section>
+</template>
+
+<template name="forgotSent">
 	<header>
 		{{> header2}}
 		{{> header}}

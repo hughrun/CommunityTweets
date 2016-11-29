@@ -32,6 +32,9 @@
 			{{/if}}
 			<br>
 			<span class="label">Type: </span>{{type}}
+			{{#if failing}}
+			<div class="failing">FEED FAILING</div>
+			{{/if}}
 		</div>
 		{{/each}}
 </template>
@@ -43,7 +46,7 @@
 	</header>
 	<h2 class="tag-header">The latest from Australia's GLAM bloggers...</h2>
 	{{#each latest}}
-	<div class="top-ten">
+	<div class="latest-ten">
 		<span class="article-title"><a href="{{link}}">{{title}}</a></span><br>
 		<span class="article-author">{{author}}</span> ...<span class="blog-name">{{blog}}</span><br>
 		{{#each categories}}
@@ -62,7 +65,7 @@
 	<h2 class="tag-header">posts about {{this}}</h2>
 	{{/with}}
 	{{#each tagBrowse}}
-		<div class="top-ten">
+		<div class="latest-ten">
 		<span class="article-title"><a href="{{link}}">{{title}}</a></span><br>
 		<span class="article-author">{{author}}</span><br>
 			<span class="blog-name"><a href="{{blogLink}}">{{blog}}</a> - {{tagDate(date)}}</span>
@@ -103,7 +106,7 @@
     </div>
     <ul>
         {{#EasySearch.Each index=articlesIndex}}
-			<div class="top-ten">
+			<div class="latest-ten">
 				<span class="article-title"><a href="{{link}}">{{title}}</a></span><br>
 				<span class="article-author">{{author}}</span> ...<span class="blog-name">{{blog}}</span><br>
 				{{#each categories}}

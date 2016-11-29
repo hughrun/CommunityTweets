@@ -1,13 +1,33 @@
 # CommunityTweets
 Formerly known as meteor2twitter at GitLab.
 
-v 0.3.0
+v 0.4
 
 ## Overview
 
 This is a Meteor app that allows users to add a blog feed listing via a web interface, stores them in a Mongo database, and tweets when a new feed is added or a new post is published.
 
-It loops every 10 minutes, and only announces one new feed each cycle, to avoid triggering Twitter’s spam blockers.
+It loops every 10 minutes, and only announces one new feed each cycle, to avoid triggering Twitter’s spam blockers. Each post is tweeted three times. six hours apart.
+
+## New in v 0.4
+
+### bug fixes
+* fixed problem where posts weren't initially tweeted if the 'published date' was earlier than the date they were actually published (mostly scheduled posts)
+* fixed problem with tags not being added to tags collection
+* admins no longer have to log in again if they navigate away from admin area
+* routing now goes to top of page when clicking on nav links
+* some admin pages showed errors - now they don't
+* searchbox now always get focus when navigating to search page
+* password length validation now occurs on password creation instead of login
+
+### new features
+* upgraded for Meteor 1.4.2.3
+* now uses `feedparser-promised` and `twit`
+* 'uncategorized' is now excluded from tags list
+* better responsiveness with two breakpoints and now responsive for admin area
+* when adding a blog, old posts are now added to the archive and recent posts tweeted
+* previously unseen posts are now added regardless of publication date
+* posts are queued for tweeting if they have a publication date within the last 48 hours, and always tweeted 3 times
 
 ## New in v 0.3.0
 * Now archives new posts and their tags each cycle
@@ -34,6 +54,7 @@ It loops every 10 minutes, and only announces one new feed each cycle, to avoid 
 * fixed bug with registering museums-related blogs
 * address and twitter account in listings are now links
 * ability to download OPML file
+* failing feeds are identified on blog browse page
 
 ## Requirements
 
@@ -44,7 +65,22 @@ It loops every 10 minutes, and only announces one new feed each cycle, to avoid 
 
 ## Dependencies
 
-See **packages**
+### Meteor (Atmosphere)
+
+* http
+* iron:router
+* themeteorchef:jquery-validation
+* accounts-password
+* email
+* easy:search
+* session
+
+### npm
+
+* feedparser-promised
+* twit
+
+Note that `feedparser-promised` and `twit` are now installed direct from npm using `Meteor npm install --save [packagename]`.
 
 Don't forget to add a /public/fonts and /public/images directory for your images and fonts (not included here for copyright reasons).
 
@@ -54,9 +90,4 @@ At [@ausGLAMBlogs](https://twitter.com/ausglamblogs) and [glamblogs.newcardigan.
 
 ## TODOs
 
-* change front page design so it's a grid of 6 - three big circles and then the existing three icons
-* fix CSS for better mobile/responsive
-* mark on listing whether good feed or failing
 * check feed works before approval
-* process to add all previous articles and tags on approval
-* refactor for Meteor 1.3 NPM integration

@@ -2,17 +2,16 @@
 // SETUP
 // ###############
 
-// Set up system params from your settings.json file
-
 Accounts.emailTemplates.siteName = "newCardigan GLAM Blogs";
 Accounts.emailTemplates.from = "GLAM Blogs alertBot <alerts@newcardigan.org>";
 
 // Uncomment the lines below to set up email on startup
 // Requires a Mailgun account
 // Only needed for dev testing on a local machine
+// for productions set MAIL_URL as part of your startup script
 
-// Meteor.startup( function() {
-//   // process.env.MAIL_URL = "smtp://postmaster@mg1.<yoururl>:<yourkey>@smtp.mailgun.org:587/";
+// Meteor.startup( () => {
+//   process.env.MAIL_URL = "smtp://postmaster@mg1.your-domain.tld:yourtoken@smtp.mailgun.org:587/";
 // });
 
 //  #############################
@@ -39,8 +38,7 @@ Accounts.emailTemplates.from = "GLAM Blogs alertBot <alerts@newcardigan.org>";
           });        
         }
         catch (error) {
-          // probably should do something a little more sophisticated here...
-          console.log(error);
+          console.error('error sending email: ' + error);
         }
       });
     },
@@ -49,16 +47,15 @@ Accounts.emailTemplates.from = "GLAM Blogs alertBot <alerts@newcardigan.org>";
       if (admin) {
         try { 
           var unapproved = UnapprovedBlogs.findOne({url:url});
-          Blogs.upsert({url: url}, {$set:{feed: unapproved.feed, author: unapproved.author, twHandle: unapproved.twHandle, type: unapproved.type, approved: true, announced: false}});
+          Blogs.upsert({url: url}, {$set:{feed: unapproved.feed, author: unapproved.author, twHandle: unapproved.twHandle, type: unapproved.type, approved: true, announced: false, failing: false}});
           return UnapprovedBlogs.remove({url:url});
         } catch (error) {
-          // on next version make this go to a proper error page/pop-over
-          console.log("error unapproving: " + error)
+          // TODO make this go to a proper error page/pop-over
+          console.error("error approving blog: " + error)
         }
       } else {
-        console.log('user not logged in on client');
-        // probably should do something more sophisticated than this.
-        // maybe throw to login screen?
+        console.error('user not logged in on client');
+        Router.go('login');
       }
     },
     'rejectBlog': function(url){
@@ -66,14 +63,12 @@ Accounts.emailTemplates.from = "GLAM Blogs alertBot <alerts@newcardigan.org>";
       if (admin) {
         return UnapprovedBlogs.remove({url: url});
       } else {
-        console.log('user not logged in on client');
-        // probably should do something more sophisticated than this.
+        console.error('user not logged in on client');
+        Router.go('login');
       }
     },
     'registerAdmin': function(email) {
-      return  Accounts.createUser({
-                email: email
-              });
+      return  Accounts.createUser({email: email});
     },
     'setPassword': function(email){
       var newUser = Accounts.findUserByEmail(email);
@@ -82,7 +77,7 @@ Accounts.emailTemplates.from = "GLAM Blogs alertBot <alerts@newcardigan.org>";
         return Accounts.sendEnrollmentEmail(userId);          
       }
       catch (e) {
-        return console.log('error: ' + e);
+        return console.error('error setting password: ' + e);
       }
     },
     'verify': function(email){
@@ -92,7 +87,7 @@ Accounts.emailTemplates.from = "GLAM Blogs alertBot <alerts@newcardigan.org>";
         return Accounts.sendVerificationEmail(userId);          
       }
       catch (e) {
-        return console.log('error: ' + e);
+        return console.error('error verifying email: ' + e);
       }
     },
     'setOwner': function(email){
@@ -102,7 +97,7 @@ Accounts.emailTemplates.from = "GLAM Blogs alertBot <alerts@newcardigan.org>";
         return Meteor.users.update({_id: userId}, {$set:{profile:{owner: true}}});          
       }
       catch (e) {
-        return console.log('error: ' + e);
+        return console.log('error setting owner: ' + e);
       }
     },
     'removePrevOwner': function(email){
@@ -123,7 +118,7 @@ Accounts.emailTemplates.from = "GLAM Blogs alertBot <alerts@newcardigan.org>";
         return Meteor.users.remove({_id: id});        
       }
       catch (e) {
-        return console.log(e);
+        return console.error('error deleting user ' + e);
       }
     },
     'deleteBlog': function(url){
