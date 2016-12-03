@@ -671,6 +671,10 @@ button.admin {
 		width: 30vw;
 	}
 
+	input {
+		width: auto;
+	}
+
 	form,
 	button,
 	input[type="submit"],
