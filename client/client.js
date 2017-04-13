@@ -358,8 +358,8 @@ Template.admin.events({
   'click #register-user': function(event){
     Router.go('register');
   },
-  'click #remove-listing': function(event){
-    Router.go('removeListing');
+  'click #edit-listing': function(event){
+    Router.go('editListings');
   },
   'click [name=make-owner]': function(event){
     event.preventDefault();
@@ -404,18 +404,93 @@ Template.admin.events({
   }
 });
 
-// REMOVE LISTING
+// EDIT/DELETE LISTING
 
-Template.removeListing.events({
-  'submit form': function(event){
+Template.editListings.events({
+  'click [class=feeds-list]': () => {
+    var selectedBlog = event.target.id;
+    console.log(selectedBlog);
+    Session.set('editBlogId', selectedBlog)
+    Router.go('editListing')
+  }
+});
+
+Template.editListing.onRendered(function(form){
+  window.scrollTo(0, 0);
+  document.getElementById("url").focus();
+  var validator = $('#edit-form').validate({
+    wrapper: 'div',
+    rules: {
+      url: {
+        required: true,
+        url: true
+      },
+      feed: {
+        required: true,
+        url: true
+      },
+      author: {
+        required: true
+      },
+      type: {
+        required: true
+      }
+    },
+    submitHandler: function(){
+      // get id
+      var id = Session.get('editBlogId');
+      // get form values
+      var fUrl = $('[id=url]').val();
+      var fFeed = $('[id=feed]').val();
+      var fAuthor = $('[id=author]').val();
+      var fTwHandle = $('[id=twHandle]').val();
+      var type = $('[id=type]').val();
+      //trim whitespace
+      var url = $.trim(fUrl);
+      var feed = $.trim(fFeed);
+      var author = $.trim(fAuthor);
+      var twHandle = $.trim(fTwHandle);
+      // set email values
+      var subj = "new blog suggestion for @ausGLAMblogs";
+      var txt = "Someone has made a suggestion for a blog to add to @ausGLAMblogs! \n\nfeed: " + fUrl + "\n\nLog in at https://glamblogs.newcardigan.org to approve/deny.";
+      // add the blog feed to the list for approval/rejection
+      Meteor.call('updateBlog', id, url, feed, author, twHandle, type, function(error){
+        if (error) {
+            validator.showErrors();
+        } else {
+          // load/redirect to the 'admin' template
+          Router.go('admin');
+          document.getElementById('edit-form').reset();
+        }
+      });    
+    }
+  });
+});
+
+Template.editListing.events({
+  'submit form':function(event){
     event.preventDefault();
-    var blog = $('[name=url]').val();
-    // You can clean the URLs using the commented-out code below if you did this for everything on the way in.
-    // This allows admins to use a trailing slash and have it stripped out.
-    // If you didn't clean your URLs on the way in, however, you may not be able to delete listings if you include this.
-    // var clean = /\/$/;
-    // var url = blog.replace(clean, "");
-    Meteor.call('deleteBlog', /*url*/blog);
+  },
+  'click #blog-update-button': (event) => {
+    event.preventDefault();
+    // change id to 'update-confirm'
+    // this builds in a safety check
+    $('#blog-update-button').attr('id', 'blog-update-confirm-button');
+    $('#blog-update-confirm-button').text('Confirm Update')
+  },
+  'click #blog-delete-button': (event) => {
+    event.preventDefault();
+    // change id to 'delete-confirm'
+    // this builds in a safety check
+    $('#blog-delete-button').attr('id', 'blog-delete-confirm-button');
+    $('#blog-delete-confirm-button').text('Confirm Deletion')
+  },  
+  'click #blog-delete-confirm-button': (event) => {
+    event.preventDefault();
+    var id = Session.get('editBlogId');
+    Meteor.call('deleteBlog', id, (error) => {
+      if (error) {console.error(error)};
+    });
     Router.go('admin');
   }
 });
@@ -551,6 +626,44 @@ Template.admin.helpers({
       return true
     }
   }
+});
+
+// EDIT LISTINGS
+
+Template.editListings.helpers({
+  'showBlogs': () => {
+    return Blogs.find({approved: true}, {sort:{url: 1}})
+  },
+  'cleanURL': (x) => {
+    // removes trailing slashes and preceding http etc
+    var cleanup = /http:\/\/|https:\/\/|\/+$/ig;
+    var cleaned = x.replace(cleanup, "");
+    return cleaned;
+  }
+});
+
+Template.editListing.helpers({
+  url: () => {
+    var blog_id = Session.get('editBlogId');
+    return Blogs.findOne({_id: blog_id}).url;
+  },
+  feed: () => {
+    var blog_id = Session.get('editBlogId');
+    return Blogs.findOne({_id: blog_id}).feed;
+  },
+  author: () => {
+    var blog_id = Session.get('editBlogId');
+    return Blogs.findOne({_id: blog_id}).author;
+  },
+  twHandle: () => {
+    var blog_id = Session.get('editBlogId');
+    return Blogs.findOne({_id: blog_id}).twHandle;
+  },
+  type: (choice) => {
+    var blog_id = Session.get('editBlogId');
+    var thisType = Blogs.findOne({_id: blog_id}).type;
+    if (choice === thisType) return "selected";
+  }  
 });
 
 // FIND BLOGS

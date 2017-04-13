@@ -37,7 +37,7 @@
 			{{/if}}
 			<button id="log-out">Log Out</button>
 			<button id="register-user">Register User</button>
-			<button id="remove-listing">Remove Listing</button>
+			<button id="edit-listing">Edit Listing</button>
 	{{/if}}
 </template>
 
@@ -75,15 +75,55 @@
 	</form>
 </template>
 
-<template name="removeListing">
+<template name="editListings">
 	<header>
 		{{> header2}}
 		{{> header}}
 	</header>
-	<form id="remove-listing" action="action">
-		<p>Please note you need to include the full protocol - 'http' won't match 'https'</p>
-		<input type="url" id="url" name="url" required>
-		<button id="delete">Delete</button>
+	{{#each showBlogs}}
+		<div class="feeds-list" id={{_id}}>
+			{{cleanURL url}} | 
+			{{#if author}}
+			{{author}} | 
+			{{/if}}
+			{{#if twHandle}}
+			{{twHandle}}
+			{{/if}}
+			{{#if failing}}
+			<span class="failing">FAILING</span>
+			{{/if}}
+		</div>
+		{{/each}}
+</template>
+
+<template name="editListing">
+	<header>
+	{{> header2}}
+	{{> header}}
+	<h2 class="header2">Edit Blog</h2>
+	</header>
+	<form id="edit-form">
+		<label for="url">Blog URL:</label>
+		<div class="explanation">Full URL including http://</div>
+		<input type="url" id="url" name="url" value={{url}} required>
+		<label for="feed">Blog RSS feed:</label>
+		<input type="url" id="feed" name="feed" value={{feed}} required>
+		<label for="author">Author name:</label>		
+		<input type="text" id="author" name="author" value={{author}}>
+		<label for="twHandle">Twitter handle:</label>
+		<div class="explanation">Include the @ symbol.</div>
+		<input type="text" id="twHandle" name="twHandle" value={{twHandle}}>
+		<label for="type">Type: </label>
+		<select id="type" name="type" required>
+			<option id="galleries" value="galleries" {{type 'galleries'}}>galleries</option>
+			<option id="libraries" value="libraries" {{type 'libraries'}}>libraries</option>
+			<option id="archives" value="archives" {{type 'archives'}}>archives</option>
+			<option id="museums" value="museums" {{type 'museums'}}>museums</option>
+			<option id="GLAM" value="GLAM" {{type 'GLAM'}}>general GLAM</option>
+			<option id="DH" value="DH" {{type 'DH'}}>digital humanities</option>
+		</select>
+		<button id="blog-update-button" class="edit-button">Update</button>
+		<button id="blog-delete-button" class="edit-button">Delete</button>
 	</form>
 </template>
 

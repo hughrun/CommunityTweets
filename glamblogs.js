@@ -93,7 +93,8 @@ Router.route('/findBlogs', {
 Router.route('/login');
 Router.route('/forgot');
 Router.route('/forgotSent');
-Router.route('/removeListing');
+Router.route('/editListing');
+Router.route('/editListings');
 Router.route('/latest');
 Router.route('/tagView');
 Router.route('/tagsList', {

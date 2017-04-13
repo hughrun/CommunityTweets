@@ -121,11 +121,21 @@ Accounts.emailTemplates.from = "GLAM Blogs alertBot <alerts@newcardigan.org>";
         return console.error('error deleting user ' + e);
       }
     },
-    'deleteBlog': function(url){
+    'deleteBlog': function(id){
       try {
-        return Blogs.remove({url: url});
+        return Blogs.remove({_id: id});
       }
       catch (e) {
+        return alert(e);
+      }
+    },
+    'updateBlog': function(id, url, feed, author, twHandle, type){
+      var clean = /\/$/;
+      var cUrl = url.replace(clean, "");
+      try {
+        return Blogs.upsert({_id: id}, {$set:{url: cUrl, feed: feed, author: author, twHandle: twHandle, type: type}});
+      }
+      catch(e) {
         return alert(e);
       }
     }

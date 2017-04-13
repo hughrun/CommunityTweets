@@ -449,8 +449,30 @@ button.admin {
 	align-items: center;
 }
 
+.feeds-list {
+	margin-top: 0.5em;
+	border: 1px solid #ff748c;
+	border-radius: 5px;
+	padding: 0.5em 1em;
+	text-align: center;
+}
+
 .forgot {
 	text-align: center;
+}
+
+.edit-button {
+	width: 50%;
+}
+
+#blog-delete-confirm-button {
+	width: 100%;
+	background: #FFB2B2;
+}
+
+#blog-update-confirm-button {
+	width:100%;
+	background: #BEFBD5;
 }
 
 /**********************************/
