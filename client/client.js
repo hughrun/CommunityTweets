@@ -450,17 +450,17 @@ Template.editListing.onRendered(function(form){
       var feed = $.trim(fFeed);
       var author = $.trim(fAuthor);
       var twHandle = $.trim(fTwHandle);
-      // set email values
-      var subj = "new blog suggestion for @ausGLAMblogs";
-      var txt = "Someone has made a suggestion for a blog to add to @ausGLAMblogs! \n\nfeed: " + fUrl + "\n\nLog in at https://glamblogs.newcardigan.org to approve/deny.";
-      // add the blog feed to the list for approval/rejection
+      // send update
       Meteor.call('updateBlog', id, url, feed, author, twHandle, type, function(error){
         if (error) {
             validator.showErrors();
         } else {
+          // reset editBlogId
+          Session.set('editBlogId', '');
+          // reset form
+          document.getElementById('edit-form').reset();
           // load/redirect to the 'admin' template
           Router.go('admin');
-          document.getElementById('edit-form').reset();
         }
       });    
     }
