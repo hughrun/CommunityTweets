@@ -6,6 +6,7 @@ UnapprovedBlogs = new Meteor.Collection('uBlogs');
 Articles = new Meteor.Collection('articles');
 Tags = new Meteor.Collection('tags');
 Tweets = new Meteor.Collection('tweets');
+Pockets = new Meteor.Collection('pockets');
 
 Meteor.users.deny({
   update: function() {
@@ -27,7 +28,7 @@ BlogsIndex = new EasySearch.Index({
 });
 
 
-// IRON ROUTER
+// IRON ROUTER PAGE ROUTING
 
 Router.configure({
   layoutTemplate:'main',
@@ -60,70 +61,6 @@ Router.route('/', {
     }
   }
 });
-
-Router.route('/reset', {
-  name: 'reset',
-  template: 'reset',
-  data: function(){
-    return Meteor.user();
-  },
-  onBeforeAction: function(){
-    var rT = Session.get('resetToken');
-    // if there's no reset token, redirect to homepage
-    if (!rT) {
-      Router.go('/');
-    } 
-    // if they have a token, go to the verified page
-    this.next();
-  } 
-});
-
-Router.route('/registerBlog');
-Router.route('/success');
-Router.route('/findBlogs', {
-  loadingTemplate: 'loading',
-  waitOn: function(){
-    return Meteor.subscribe('blogs');
-  },
-  action: function(){
-    this.render('findBlogs');
-  }
-});
-
-Router.route('/login');
-Router.route('/forgot');
-Router.route('/forgotSent');
-Router.route('/editListing');
-Router.route('/editListings');
-Router.route('/latest');
-Router.route('/tagView');
-Router.route('/tagsList', {
-
-  loadingTemplate: 'loading',
-
-  waitOn: function(){
-    return Meteor.subscribe('tags');
-  },
-  action: function(){
-    if (this.ready()){
-     this.render('tagsList');      
-    }
-  }
-});
-
-Router.route('/searchBox', {
-  
-  loadingTemplate: 'loading',
-
-  waitOn: function(){
-    return Meteor.subscribe('articles');
-  },
-
-  action: function(){
-    this.render('searchBox');
-  }
-});
-
 Router.route('/admin', {
   name: 'admin',
   template: 'admin',
@@ -138,25 +75,25 @@ Router.route('/admin', {
     }
   }
 });
-
-Router.route('/register', {
-  name: 'register',
-  template: 'register',
-  data: function(){
-    return Meteor.user();
+Router.route('/editListing');
+Router.route('/editListings');
+Router.route('/findBlogs', {
+  loadingTemplate: 'loading',
+  waitOn: function(){
+    return Meteor.subscribe('blogs');
   },
-  onBeforeAction: function(){
-    if (Meteor.userId()){
-      this.next();
-    } else {
-      Router.go('login');
-    }
+  action: function(){
+    this.render('findBlogs');
   }
 });
+Router.route('/forgot');
+Router.route('/forgotSent');
+
+Router.route('/latest');
+Router.route('/login');
 
 // OPML
 // creates fresh opml file when user presses button
-
 Router.route('/opml', function(){
   var head = '<?xml version="1.0" encoding="ISO-8859-1"?>\n' +
   '<opml version="1.1">\n' +
@@ -199,3 +136,59 @@ Router.route('/opml', function(){
   this.response.writeHead(200, headers);
   this.response.end(opmlFile);
   }, {where: 'server'});
+
+Router.route('/pocket');
+Router.route('/pocket-authentication');
+Router.route('/register', {
+  name: 'register',
+  template: 'register',
+  data: function(){
+    return Meteor.user();
+  },
+  onBeforeAction: function(){
+    if (Meteor.userId()){
+      this.next();
+    } else {
+      Router.go('login');
+    }
+  }
+});
+Router.route('/registerBlog');
+Router.route('/reset', {
+  name: 'reset',
+  template: 'reset',
+  data: function(){
+    return Meteor.user();
+  },
+  onBeforeAction: function(){
+    var rT = Session.get('resetToken');
+    // if there's no reset token, redirect to homepage
+    if (!rT) {
+      Router.go('/');
+    } 
+    // if they have a token, go to the verified page
+    this.next();
+  } 
+});
+Router.route('/searchBox', {
+  loadingTemplate: 'loading',
+  waitOn: function(){
+    return Meteor.subscribe('articles');
+  },
+  action: function(){
+    this.render('searchBox');
+  }
+});
+Router.route('/success');
+Router.route('/tagsList', {
+  loadingTemplate: 'loading',
+  waitOn: function(){
+    return Meteor.subscribe('tags');
+  },
+  action: function(){
+    if (this.ready()){
+     this.render('tagsList');      
+    }
+  }
+});
+Router.route('/tagView');

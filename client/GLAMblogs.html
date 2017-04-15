@@ -12,18 +12,11 @@
 	{{> footer}}
 </template>
 
-<template name="loading">
-	<p>just a sec...</p>
-	<div id="fountainG">
-	<div id="fountainG_1" class="fountainG"></div>
-	<div id="fountainG_2" class="fountainG"></div>
-	<div id="fountainG_3" class="fountainG"></div>
-	<div id="fountainG_4" class="fountainG"></div>
-	<div id="fountainG_5" class="fountainG"></div>
-	<div id="fountainG_6" class="fountainG"></div>
-	<div id="fountainG_7" class="fountainG"></div>
-	<div id="fountainG_8" class="fountainG"></div>
-</div>
+<template name="footer">
+	<footer class="footer">
+		a <a href="https://newcardigan.org">newCardigan</a> project built by <a href="https://www.hughrundle.net">Hugh Rundle</a>
+		{{> trackercode}}
+	</footer>
 </template>
 
 <template name="header">
@@ -68,28 +61,16 @@
 			</a>
 	</span>
 	<span class="header-icons">	
+			<a href="pocket">
+				<img class="header-icon" src="/images/pocket.svg" alt="Pocket integration">
+			</a>
+	</span>
+	<span class="header-icons">	
 			<a href="login">
 				<img class="header-icon" src="/images/login.svg" alt="admin interface">
 			</a>
 	</span>
 </div>			
-</template>
-
-<template name="startup">
-	<div class="startup">
-	<p>You're up!</p> 
-	<p>Let's get started by registering your owner account. Click the link on the email you receive, and you'll be ready to go.</p>
-	<form id="startup-form" action="action" class="register">
-		<label for="email">email address</label>
-	    <input type="email" name="email" id="email1" class="required">
-	    <br>
-	    <label for="email_again">and again...</label>
-	    <input type="email" name="email_again" id="email2" class="required">
-	    <br>
-	    <input type="submit" id="create-account" class="reg-button" value="Register Owner">
-	    <p></p>
-	</form>
-	</div>
 </template>
 
 <template name="home">
@@ -152,6 +133,13 @@
 			<div>OPML file</div>
 		</div>
 		<div class="home-option">
+			<a href="pocket">
+				<img class="home-icon" src="/images/pocket.svg" alt="pocket intergration">
+			</a>
+			<div>Pocket</div>
+			<div>integration</div>
+		</div>		
+		<div class="home-option">
 			<a href="login">
 				<img class="home-icon" src="/images/login.svg" alt="admin interface">
 			</a>
@@ -170,11 +158,57 @@
 	</section>
 </template>
 
-<template name="footer">
-	<footer class="footer">
-		a <a href="https://newcardigan.org">newCardigan</a> project built by <a href="https://www.hughrundle.net">Hugh Rundle</a>
-		{{> trackercode}}
-	</footer>
+<template name="loading">
+	<p>just a sec...</p>
+	<div id="fountainG">
+	<div id="fountainG_1" class="fountainG"></div>
+	<div id="fountainG_2" class="fountainG"></div>
+	<div id="fountainG_3" class="fountainG"></div>
+	<div id="fountainG_4" class="fountainG"></div>
+	<div id="fountainG_5" class="fountainG"></div>
+	<div id="fountainG_6" class="fountainG"></div>
+	<div id="fountainG_7" class="fountainG"></div>
+	<div id="fountainG_8" class="fountainG"></div>
+	</div>
+</template>
+
+<template name="pocket">
+	{{> header}}
+	{{> header2}}
+	<section class="main">
+			<p>Get Australian GLAM blog posts direct to your <a href="https://getpocket.com/">Pocket</a> account! Simply give <i>Aus GLAM Blogs</i> permission by clicking the button below, and wait for posts to magically appear.</p>
+			<br>
+			<div class="pocket">
+				<button id="get-pocket">I want Pocket Blogs</button>
+			</div>
+	</section>
+</template>
+
+<template name="pocketAuthentication">
+	{{> header}}
+	{{> header2}}
+		<div class="finalise-pocket">
+			<div class="pocket">
+				<button id="authorise-pocket">Press to Finalise Pocket Authentication</button>
+			</div>
+		</div>
+</template>
+
+<template name="startup">
+	<div class="startup">
+	<p>You're up!</p> 
+	<p>Let's get started by registering your owner account. Click the link on the email you receive, and you'll be ready to go.</p>
+	<form id="startup-form" action="action" class="register">
+		<label for="email">email address</label>
+	    <input type="email" name="email" id="email1" class="required">
+	    <br>
+	    <label for="email_again">and again...</label>
+	    <input type="email" name="email_again" id="email2" class="required">
+	    <br>
+	    <input type="submit" id="create-account" class="reg-button" value="Register Owner">
+	    <p></p>
+	</form>
+	</div>
 </template>
 
 <template name="trackercode">

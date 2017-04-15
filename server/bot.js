@@ -169,10 +169,28 @@ function runBot() {
 					   	// upsert to collections
 					   	Announcement.prep(item);		
 						// if publication date is within the last 48 hours, queue a tweet
-						// not this also applies to recent articles from newly added feeds
+						// and send to Pocket accounts
+						// note this also applies to recent articles from newly added feeds
 						if (pubdate > cutoff) {
-					   		var punct = "-";
-					   		Announcement.queue(item.title, name, item.link, punct);
+							// queue tweet
+				   		var punct = "-";
+				   		Announcement.queue(item.title, name, item.link, punct);
+							// send to registered Pocket accounts
+							const pocketAccounts = Pockets.find();
+							pocketAccounts.forEach((account) => {
+								let key = Meteor.settings.POCKET_KEY;
+								let token = account.accessToken;
+								// escape forward slashes for URL
+								let escapedUrl = item.link.replace(/\//g, '\\/');
+								let tagsArray = item.categories;
+								tagsArray.push("Aus GLAM blogs");
+								let tags = tagsArray.toString();
+								// send an API call to add the item
+								HTTP.call("POST", "https://getpocket.com/v3/add",
+						      {headers:{"X-Accept":"application/json", "Content-Type":"application/json; charset=UTF8"},
+						       data:{"consumer_key": key, "access_token": token, "url": escapedUrl, "title": item.title, "tags": tags}
+						    });
+							})					   		
 					   	}
 					// if it IS already in the Articles collection check how many times it's been tweeted  	
 					} else {
@@ -200,14 +218,12 @@ function runBot() {
 				});
 			}).catch( (error) => {
 				console.error(`error with ${blog.feed} --> ${error}`);
-				if (error === "Error: Not a feed") {
 					Blogs.update({feed: blog.feed}, {$set: {failing: true}}, (err, data) => {
-						if (err) {console.err(`error ${err}`)
+						if (err) {console.error(`error ${err}`)
 						} else {
 							console.log(`${data} documents updated`);
 						}
 					});
-				}
 			});
 		}	
 	});  

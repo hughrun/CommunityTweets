@@ -55,7 +55,6 @@ Accounts.emailTemplates.from = "GLAM Blogs alertBot <alerts@newcardigan.org>";
         }
       } else {
         console.error('user not logged in on client');
-        Router.go('login');
       }
     },
     'rejectBlog': function(url){
@@ -64,7 +63,6 @@ Accounts.emailTemplates.from = "GLAM Blogs alertBot <alerts@newcardigan.org>";
         return UnapprovedBlogs.remove({url: url});
       } else {
         console.error('user not logged in on client');
-        Router.go('login');
       }
     },
     'registerAdmin': function(email) {
@@ -138,8 +136,40 @@ Accounts.emailTemplates.from = "GLAM Blogs alertBot <alerts@newcardigan.org>";
       catch(e) {
         return alert(e);
       }
+    },
+    'requestPocket': function(){
+      // make initial (sync) call to get request token
+      const pocketConsumerKey = Meteor.settings.POCKET_KEY;
+      // CHANGE THIS TO YOUR OWN URL FOR PRODUCTION
+      const pocketRedirectUrl = "http://localhost:3000/pocket-authentication";
+      try {
+        // we run as sync so it will return any response
+        return HTTP.call("POST", "https://getpocket.com/v3/oauth/request", 
+          {data:{"consumer_key": pocketConsumerKey, "redirect_uri": "http://glamblogs.newcardigan.org"},
+          headers:{"X-Accept":"application/json", "Content-Type":"application/json; charset=UTF8"}
+        });
+      } catch (error) {
+        console.error(error)
+      }
+    },
+    'authorisePocket': function(code){
+      const pocketConsumerKey = Meteor.settings.POCKET_KEY;
+      console.log(pocketConsumerKey);
+      console.log(code);
+      return HTTP.call("POST", "https://getpocket.com/v3/oauth/authorize", 
+        {data:{"consumer_key": pocketConsumerKey, "code": code},
+        headers:{"X-Accept":"application/json", "Content-Type":"application/json; charset=UTF8"}
+    });
+    },
+    'storePocketCredentials': (accessToken, username) => {
+      try {
+        return Pockets.upsert({username: username}, {$set:{accessToken: accessToken}});
+      } catch (e) {
+        console.error(e)
+      }
     }
 });
+
 //  #############
 //  Publish
 //  #############

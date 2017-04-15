@@ -601,6 +601,26 @@ button.admin {
 }
 
 /**********************************/
+/* pocket */
+/**********************************/
+
+.pocket {
+	text-align: center;
+}
+
+.pocket button {
+	float:none;
+}
+
+.finalise-pocket {
+	margin-top: 4em;
+}
+
+#pocket-authorised {
+	background: #BEFBD5;
+	border-color: #3a3a3a;
+}
+/**********************************/
 /* register */
 /**********************************/
 

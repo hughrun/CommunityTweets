@@ -580,6 +580,42 @@ Template.tagsList.events({
   }
 });
 
+// POCKET
+
+Template.pocket.events({
+  'click #get-pocket': () => {
+    Meteor.call('requestPocket', (err, resp) => {
+      // TODO - handle errors
+        let content = JSON.parse(resp.content);
+        let pocketRequestToken = content.code;
+        // CHANGE THIS TO YOUR OWN URL FOR PRODUCTION
+        let pocketRedirectUrl = "http://localhost:3000/pocket-authentication";
+        // store token in localStorage so it persists when we come back from Pocket
+        localStorage.setItem('pocketCode', pocketRequestToken);
+        //send user to Pocket to authenticate, using request token we just got from authenticatePocket
+        window.open(`https://getpocket.com/auth/authorize?request_token=${pocketRequestToken}&redirect_uri=${pocketRedirectUrl}`, '_self');
+    });
+  }
+});
+
+Template.pocketAuthentication.events({
+  'click #authorise-pocket': () => {
+    //get token
+    let code = localStorage.getItem('pocketCode');
+    Meteor.call('authorisePocket', code, (err, resp) => {
+      // TODO - handle errors
+      console.log(resp)
+      let content = JSON.parse(resp.content);
+      let username = content.username;
+      let accessToken = content.access_token
+      // call method to store access token
+      Meteor.call('storePocketCredentials', accessToken, username, (arr, resp) => {console.log(resp)});
+      $('#authorise-pocket').attr('id', 'pocket-authorised');
+      $('#pocket-authorised').text(`Thanks ${username}, stay tuned for blogs in your Pocket soon!`)
+    })
+  }
+})
+
 //############################################################
 // 
 //                            HELPERS
