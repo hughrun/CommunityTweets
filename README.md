@@ -1,7 +1,7 @@
 # CommunityTweets
 Formerly known as meteor2twitter at GitLab.
 
-v 0.4.1
+v 0.5
 
 ## Overview
 
@@ -9,7 +9,25 @@ This is a Meteor app that allows users to add a blog feed listing via a web inte
 
 It loops every 10 minutes, and only announces one new feed each cycle, to avoid triggering Twitter’s spam blockers. Each post is tweeted three times. six hours apart.
 
-On first use, go to **[url]/startup** to set admin user
+
+### Set Up
+
+You need to be running [Meteor](https://www.meteor.com) including all **requirements** and **dependencies** (listed below).
+
+On first use, go to **[url]/startup** to set admin user.
+
+Prior to putting in production, ensure you change `pocketRedirectUrl` from `localhost:3000` to your own base URL in both server.js and client.js, as well as other necessary edits to wording of pages etc (code here comes with all the original `ausGLAMBlogs` wording, which should be changed for obvious reasons).
+
+In addition to environment settings for `PORT`, `ROOT_URL`, `MONGO_URL` and `MAIL_URL` (see Mailgun documentation) you'll need to use `METEOR_SETTINGS` for:
+
+* SITE_NAME ('My Awesome Website')
+* EMAIL_FROM (email address you want your email messages to appear to come from)
+* TWITTER credentials (see Twitter documentation)
+* POCKET_KEY (Pocket platform consumer key)
+
+## New in v 0.5
+* added ability for admins to edit blog listings
+* added [Pocket](https://getpocket.com/) integration
 
 ## New in v 0.4.1
 * fixed problem with text fields on small screens
@@ -68,6 +86,7 @@ On first use, go to **[url]/startup** to set admin user
 * [Meteor](https://www.meteor.com)
 * A Twitter account with [app keys](https://apps.twitter.com)
 * A [Mailgun](https://www.mailgun.com) account
+* A [Pocket Platform Consumer Key](https://getpocket.com/developer/docs/authentication)
 
 ## Dependencies
 
@@ -99,3 +118,4 @@ At [@ausGLAMBlogs](https://twitter.com/ausglamblogs) and [glamblogs.newcardigan.
 ## TODOs
 
 * check feed works before approval
+* refactor codebase to ES6

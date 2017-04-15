@@ -585,7 +585,10 @@ Template.tagsList.events({
 Template.pocket.events({
   'click #get-pocket': () => {
     Meteor.call('requestPocket', (err, resp) => {
-      // TODO - handle errors
+      if (err){
+        $('#get-pocket').attr('class', 'error');
+        $('#get-pocket').text('Something went wrong :-(');
+      } else {
         let content = JSON.parse(resp.content);
         let pocketRequestToken = content.code;
         // CHANGE THIS TO YOUR OWN URL FOR PRODUCTION
@@ -594,6 +597,7 @@ Template.pocket.events({
         localStorage.setItem('pocketCode', pocketRequestToken);
         //send user to Pocket to authenticate, using request token we just got from authenticatePocket
         window.open(`https://getpocket.com/auth/authorize?request_token=${pocketRequestToken}&redirect_uri=${pocketRedirectUrl}`, '_self');
+      }
     });
   }
 });
@@ -603,15 +607,24 @@ Template.pocketAuthentication.events({
     //get token
     let code = localStorage.getItem('pocketCode');
     Meteor.call('authorisePocket', code, (err, resp) => {
-      // TODO - handle errors
-      console.log(resp)
-      let content = JSON.parse(resp.content);
-      let username = content.username;
-      let accessToken = content.access_token
-      // call method to store access token
-      Meteor.call('storePocketCredentials', accessToken, username, (arr, resp) => {console.log(resp)});
-      $('#authorise-pocket').attr('id', 'pocket-authorised');
-      $('#pocket-authorised').text(`Thanks ${username}, stay tuned for blogs in your Pocket soon!`)
+      if (err) {
+        $('#authorise-pocket').attr('class', 'error');
+        $('#authorise-pocket').text('Something went wrong :-(');
+      } else {
+        let content = JSON.parse(resp.content);
+        let username = content.username;
+        let accessToken = content.access_token
+        // call method to store access token
+        Meteor.call('storePocketCredentials', accessToken, username, (err, resp) => {
+          if (err) {
+            $('#authorise-pocket').attr('class', 'error');
+            $('#authorise-pocket').text('Something went wrong :-(');
+          } else {
+            $('#authorise-pocket').attr('id', 'pocket-authorised');
+            $('#pocket-authorised').text(`Thanks ${username}, stay tuned for blogs in your Pocket soon!`)
+          }
+        });
+      }
     })
   }
 })

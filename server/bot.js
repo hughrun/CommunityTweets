@@ -180,16 +180,21 @@ function runBot() {
 							pocketAccounts.forEach((account) => {
 								let key = Meteor.settings.POCKET_KEY;
 								let token = account.accessToken;
+								let user = account.username
 								// escape forward slashes for URL
 								let escapedUrl = item.link.replace(/\//g, '\\/');
 								let tagsArray = item.categories;
 								tagsArray.push("Aus GLAM blogs");
 								let tags = tagsArray.toString();
 								// send an API call to add the item
-								HTTP.call("POST", "https://getpocket.com/v3/add",
+								try {
+									HTTP.call("POST", "https://getpocket.com/v3/add",
 						      {headers:{"X-Accept":"application/json", "Content-Type":"application/json; charset=UTF8"},
 						       data:{"consumer_key": key, "access_token": token, "url": escapedUrl, "title": item.title, "tags": tags}
 						    });
+								} catch (err) {
+									console.err(`error adding to pocket for ${user} \n ${err}`);
+								}
 							})					   		
 					   	}
 					// if it IS already in the Articles collection check how many times it's been tweeted  	

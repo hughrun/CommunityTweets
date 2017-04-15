@@ -128,7 +128,7 @@ hr {
 	font-family: 'Nova Mono', monospace;
 }
 
-label.error {
+label.error, .error {
 	background-color: #ff748c;
 	color: #3a3a3a;
 	padding:3px;
