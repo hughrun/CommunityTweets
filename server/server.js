@@ -145,7 +145,7 @@ Accounts.emailTemplates.from = "GLAM Blogs alertBot <alerts@newcardigan.org>";
       try {
         // we run as sync so it will return any response
         return HTTP.call("POST", "https://getpocket.com/v3/oauth/request", 
-          {data:{"consumer_key": pocketConsumerKey, "redirect_uri": "http://glamblogs.newcardigan.org"},
+          {data:{"consumer_key": pocketConsumerKey, "redirect_uri": pocketRedirectUrl},
           headers:{"X-Accept":"application/json", "Content-Type":"application/json; charset=UTF8"}
         });
       } catch (error) {
