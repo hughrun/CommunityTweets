@@ -181,19 +181,22 @@ function runBot() {
 								let key = Meteor.settings.POCKET_KEY;
 								let token = account.accessToken;
 								let user = account.username
-								// escape forward slashes for URL
-								let escapedUrl = item.link.replace(/\//g, '\\/');
+								// URL encode the ...URL
+								let link = item.link;
+								let escapedUrl = encodeURIComponent(link);
 								let tagsArray = item.categories;
 								tagsArray.push("Aus GLAM blogs");
-								let tags = tagsArray.toString();
+								// URL encode the tags
+								let tagString = tagsArray.toString();
+								let tags = encodeURIComponent(tagString);
+								// construct URL for API call
+								let apiCall = `https://getpocket.com/v3/add?consumer_key=${key}&access_token=${token}&url=${escapedUrl}&tags=${tags}`;
 								// send an API call to add the item
 								try {
-									HTTP.call("POST", "https://getpocket.com/v3/add",
-						      {headers:{"X-Accept":"application/json", "Content-Type":"application/json; charset=UTF8"},
-						       data:{"consumer_key": key, "access_token": token, "url": escapedUrl, "title": item.title, "tags": tags}
-						    });
+									HTTP.call('POST', apiCall, {params: {headers: {"Content-Type" : "application/x-www-form-urlencoded; charset=UTF8"}}});
+									console.log(`sent ${item.title} to ${user}`);
 								} catch (err) {
-									console.err(`error adding to pocket for ${user} \n ${err}`);
+										console.error(`error adding to pocket for ${user} \n ${err}`);
 								}
 							})					   		
 					   	}

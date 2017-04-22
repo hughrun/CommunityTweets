@@ -622,6 +622,8 @@ Template.pocketAuthentication.events({
           } else {
             $('#authorise-pocket').attr('id', 'pocket-authorised');
             $('#pocket-authorised').text(`Thanks ${username}, stay tuned for blogs in your Pocket soon!`)
+            // clear token from storage
+            localStorage.removeItem('pocketCode');
           }
         });
       }
