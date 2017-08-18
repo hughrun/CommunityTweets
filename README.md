@@ -1,5 +1,4 @@
 
---
 CommunityTweets - a meteor app to index and tweet blog posts
 Copyright (C) 2017  Hugh Rundle
 
@@ -18,7 +17,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 You can contact Hugh on Twitter @hughrundle 
 or email hugh [at] hughrundle [dot] net
---
+
 
 # CommunityTweets
 Formerly known as meteor2twitter at GitLab. This code runs [AusGLAMBlogs](https://glamblogs.newcardigan.org)
