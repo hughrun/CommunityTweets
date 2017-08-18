@@ -1,11 +1,47 @@
+<!--
+  #####################################################################
+    CommunityTweets - a meteor app to index and tweet blog posts
+    Copyright (C) 2017  Hugh Rundle
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+    You can contact Hugh on Twitter @hughrundle 
+    or email hugh [at] hughrundle [dot] net
+  #####################################################################
+
+-->
+
 <template name="registerBlog">
 	<header>
 		{{> header2}}
 		{{> header}}
 	</header>
+	<section class="register-text">
+		You can register your blog for consideration here. Blogs must be:
+		<ul>
+			<li>written by author/s who are Australian residents or who identify as Australian</li>
+			<li>primarily professional in focus</li>
+			<li>not institutional or corporate blogs (group blogs will be considered)</li>
+		</ul>
+		If you have any questions or concerns regarding registration, <a href="https://newcardigan.org/about/">contact newCardigan.</a>
+		
+	</section>
 	<form id="register-form">
 		<label for="url">Blog URL:</label>
 		<div class="explanation">Full URL including http://</div>
+		<div class="explanation">This should be the base URL of your blog, not an individual post</div>
+		<div class="explanation">(e.g. http://yourblog.wordpress.com)</div>		
 		<input type="url" id="url" name="url" required>
 		<label for="feed">Blog RSS feed:</label>
 		<div class="explanation">Usually http://yourblogurl/rss or http://yourblogurl/feed.</div> 
@@ -41,5 +77,8 @@
 	</p>
 	<p>
 		Your blog feed will be checked in the next few days and added to <a href="https://twitter.com/ausglamblogs">@ausglamblogs</a>.
+	</p>
+	<p>
+		Once approved, new posts will be indexed and searchable here, and also tweeted. To hide a post from AusGLAMBlogs simply use the tag "notGLAM" and your post will be ignored.
 	</p>
 </template>

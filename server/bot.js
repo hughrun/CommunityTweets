@@ -1,3 +1,24 @@
+/* #####################################################################
+    CommunityTweets - a meteor app to index and tweet blog posts
+    Copyright (C) 2017  Hugh Rundle
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+    You can contact Hugh on Twitter @hughrundle 
+    or email hugh [at] hughrundle [dot] net
+  #####################################################################*/
+
 // ######################################################################################
 // ################# This section runs the Twitter bot ##################################
 // ######################################################################################
@@ -162,66 +183,79 @@ function runBot() {
 					// *********************************
 					// 		** NEW POSTS **
 					// *********************************
-					
-					// if it's not already in the Articles collection, upsert data to Articles and Tags
-					var recorded = Articles.findOne({link: item.link});
-					if (!recorded){
-					   	// upsert to collections
-					   	Announcement.prep(item);		
-						// if publication date is within the last 48 hours, queue a tweet
-						// and send to Pocket accounts
-						// note this also applies to recent articles from newly added feeds
-						if (pubdate > cutoff) {
-							// queue tweet
-				   		var punct = "-";
-				   		Announcement.queue(item.title, name, item.link, punct);
-							// send to registered Pocket accounts
-							const pocketAccounts = Pockets.find();
-							pocketAccounts.forEach((account) => {
-								let key = Meteor.settings.POCKET_KEY;
-								let token = account.accessToken;
-								let user = account.username
-								// URL encode the ...URL
-								let link = item.link;
-								let escapedUrl = encodeURIComponent(link);
-								let tagsArray = item.categories;
-								tagsArray.push("Aus GLAM blogs");
-								// URL encode the tags
-								let tagString = tagsArray.toString();
-								let tags = encodeURIComponent(tagString);
-								// construct URL for API call
-								let apiCall = `https://getpocket.com/v3/add?consumer_key=${key}&access_token=${token}&url=${escapedUrl}&tags=${tags}`;
-								// send an API call to add the item
-								try {
-									HTTP.call('POST', apiCall, {params: {headers: {"Content-Type" : "application/x-www-form-urlencoded; charset=UTF8"}}});
-									console.log(`sent ${item.title} to ${user}`);
-								} catch (err) {
-										console.error(`error adding to pocket for ${user} \n ${err}`);
-								}
-							})					   		
-					   	}
-					// if it IS already in the Articles collection check how many times it's been tweeted  	
-					} else {
-						
-						// *********************************
-						// 		** NEWISH POSTS **
-						//
-						//	i.e. ones we first saw recently 
-						//	that need to be tweeted again.
-						// *********************************
-						
-						//trigger additional tweets at 6, and 12 hours (we already tweeted at 0 hours above)
-						// if there's no 'tweeted' field we simply ignore it
-						if (recorded.tweeted && (recorded.tweeted.times < 3)) {
-							// if the tweeted.date exists and is older than 6 hours ago choose punctuation style
-							// this is a failsafe to stop Twitter blocking 'duplicate' tweets
-							// note for the initial tweet punct is set as '-' (see New Posts above)					
-							if (recorded.tweeted.date < (now - 2.16e+7)) {
-								var punct = (recorded.tweeted.times === 1) ? "|" : "/";
+
+					// ######## edit this filter list to allow your bloggers to exclude posts from being indexed and tweeted
+					var filterList = ["notGLAM", "notglam", "Notglam", "#notglam", "#notGLAM"];
+
+					//check item.categories for filtered tags and if it has one, ignore the post.
+					var hiddenPost = _.find(item.categories, function(tag){
+						return _.contains(filterList, tag)
+					});
+
+					if (!hiddenPost) {
+
+						// if it's not already in the Articles collection, upsert data to Articles and Tags
+						var recorded = Articles.findOne({link: item.link});
+						if (!recorded){
+						   	// upsert to collections
+						   	Announcement.prep(item);		
+							// if publication date is within the last 48 hours, queue a tweet
+							// and send to Pocket accounts
+							// note this also applies to recent articles from newly added feeds
+							if (pubdate > cutoff) {
 								// queue tweet
-								Announcement.queue(item.title, name, item.link, punct);
+					   		var punct = "-";
+					   		Announcement.queue(item.title, name, item.link, punct);
+								// send to registered Pocket accounts
+								const pocketAccounts = Pockets.find();
+								pocketAccounts.forEach((account) => {
+									let key = Meteor.settings.POCKET_KEY;
+									let token = account.accessToken;
+									let user = account.username
+									// URL encode the ...URL
+									let link = item.link;
+									let escapedUrl = encodeURIComponent(link);
+									let tagsArray = item.categories;
+									tagsArray.push("Aus GLAM blogs");
+									// URL encode the tags
+									let tagString = tagsArray.toString();
+									let tags = encodeURIComponent(tagString);
+									// construct URL for API call
+									let apiCall = `https://getpocket.com/v3/add?consumer_key=${key}&access_token=${token}&url=${escapedUrl}&tags=${tags}`;
+									// send an API call to add the item
+									try {
+										HTTP.call('POST', apiCall, {params: {headers: {"Content-Type" : "application/x-www-form-urlencoded; charset=UTF8"}}});
+										console.log(`sent ${item.title} to ${user}`);
+									} catch (err) {
+											console.error(`error adding to pocket for ${user} \n ${err}`);
+									}
+								})					   		
+						   	}
+						// if it IS already in the Articles collection check how many times it's been tweeted  	
+						} else {
+							
+							// *********************************
+							// 		** NEWISH POSTS **
+							//
+							//	i.e. ones we first saw recently 
+							//	that need to be tweeted again.
+							// *********************************
+							
+							//trigger additional tweets at 6, and 12 hours (we already tweeted at 0 hours above)
+							// if there's no 'tweeted' field we simply ignore it
+							if (recorded.tweeted && (recorded.tweeted.times < 3)) {
+								// if the tweeted.date exists and is older than 6 hours ago choose punctuation style
+								// this is a failsafe to stop Twitter blocking 'duplicate' tweets
+								// note for the initial tweet punct is set as '-' (see New Posts above)					
+								if (recorded.tweeted.date < (now - 2.16e+7)) {
+									var punct = (recorded.tweeted.times === 1) ? "|" : "/";
+									// queue tweet
+									Announcement.queue(item.title, name, item.link, punct);
+								}
 							}
 						}
+					} else {
+						// it's a 'hidden' post so do nothing
 					}
 				});
 			}).catch( (error) => {

@@ -1,7 +1,29 @@
-# CommunityTweets
-Formerly known as meteor2twitter at GitLab.
 
-v 0.5
+--
+CommunityTweets - a meteor app to index and tweet blog posts
+Copyright (C) 2017  Hugh Rundle
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+You can contact Hugh on Twitter @hughrundle 
+or email hugh [at] hughrundle [dot] net
+--
+
+# CommunityTweets
+Formerly known as meteor2twitter at GitLab. This code runs [AusGLAMBlogs](https://glamblogs.newcardigan.org)
+
+v 0.5.0
 
 ## Overview
 
@@ -9,29 +31,15 @@ This is a Meteor app that allows users to add a blog feed listing via a web inte
 
 It loops every 10 minutes, and only announces one new feed each cycle, to avoid triggering Twitter’s spam blockers. Each post is tweeted three times. six hours apart.
 
+Bloggers can register their blog, and then one or more administrators approve the new listing - everything in the RSS feed (usually the last 10 or 20 posts) is then added to the app's index, and new posts will be added and tweeted.
 
-### Set Up
+Your community can find the latest posts either by following your twitter bot or checking/searching the web app.
 
-You need to be running [Meteor](https://www.meteor.com) including all **requirements** and **dependencies** (listed below).
+## New in v 0.5.0
 
-On first use, go to **[url]/startup** to set admin user.
-
-Prior to putting in production, ensure you change `pocketRedirectUrl` from `localhost:3000` to your own base URL in both server.js and client.js, as well as other necessary edits to wording of pages etc (code here comes with all the original `ausGLAMBlogs` wording, which should be changed for obvious reasons).
-
-In addition to environment settings for `PORT`, `ROOT_URL`, `MONGO_URL` and `MAIL_URL` (see Mailgun documentation) you'll need to use `METEOR_SETTINGS` for:
-
-* SITE_NAME ('My Awesome Website')
-* EMAIL_FROM (email address you want your email messages to appear to come from)
-* TWITTER credentials (see Twitter documentation)
-* POCKET_KEY (Pocket platform consumer key)
-
-## New in v 0.5
-* added ability for admins to edit blog listings
-* added [Pocket](https://getpocket.com/) integration
-
-## New in v 0.4.1
-* fixed problem with text fields on small screens
-* amended code for picking up failing feeds
+* added ability for bloggers to avoid including a particular post by giving it a specified filter tag
+* minor updates to web app text
+* **as of this version CommunityTweets is now licensed under GPL v3** - see LICENSE for full terms
 
 ## New in v 0.4
 
@@ -86,7 +94,6 @@ In addition to environment settings for `PORT`, `ROOT_URL`, `MONGO_URL` and `MAI
 * [Meteor](https://www.meteor.com)
 * A Twitter account with [app keys](https://apps.twitter.com)
 * A [Mailgun](https://www.mailgun.com) account
-* A [Pocket Platform Consumer Key](https://getpocket.com/developer/docs/authentication)
 
 ## Dependencies
 
@@ -99,8 +106,6 @@ In addition to environment settings for `PORT`, `ROOT_URL`, `MONGO_URL` and `MAI
 * email
 * easy:search
 * session
-
-(see `packages` for full list)
 
 ### npm
 
@@ -115,7 +120,15 @@ Don't forget to add a /public/fonts and /public/images directory for your images
 
 At [@ausGLAMBlogs](https://twitter.com/ausglamblogs) and [glamblogs.newcardigan.org](https://glamblogs.newcardigan.org)
 
+## Deploying
+
+To deploy your own version, see the [Quick Deployment Guide](quick_deployment_guide.md)
+
 ## TODOs
 
-* check feed works before approval
-* refactor codebase to ES6
+* auto-check feed works before approval
+* admins can manually remove a post from the index and tweet queue
+
+## LICENCE
+
+GPL 3+
