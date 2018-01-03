@@ -1,4 +1,13 @@
-# deploying Meteor
+# Getting your app running in production
+
+Before you deploy, you need make sure you have:
+
+* checked the code for URLs, assets and wording that may need to be changed to match your app instead of Aus GLAM Blogs
+* adjusted [the 'notGLAM' filter](https://www.hughrundle.net/2017/08/18/silencing-ausglamblogs/) to suit your community's needs.
+* created a `public` directory with subdirectories `fonts` and `images` containing any font or image files you are using, and a favicon.ico file.
+* set up DNS for your domain name to point to your production server
+* set up your web server - nginx or Apache
+* set up an HTTPS certificate for your domain using LetsEncrypt
 
 Deploying Meteor apps is a bit finicky. The most complicated thing is setting up the Mongo database: unless you're a Mongo expert, the easiest and safest thing to do is use a Mongo hosting company like mLab, Scalegrid or nodechef. I use mLab(https://mlab.com/), which offers a free tier if you are just running a small app for fun. You will also need to register a few other things:
 
@@ -114,3 +123,15 @@ end script
 ```
 
 2. Run your app: `[sudo] service myawesome app start`
+
+# Setting up your app
+
+Once you've deployed your app, you need to do a couple of things to get it set up properly.
+
+1. Go to https://yourappurl.com/startup
+2. You should see a screen telling you to register an account. The email address you register here will become the Owner of your application. Once you've registered an account on this page the /startup route will redirect to the home page.
+3. enter an email address, then click on the link in the email you get to complete registration and log in.
+
+That's it :-)
+
+All admins will get an email whenever someone registers a blog. You then need to log in to the app to approve each blog: this prevents spammers from registering dodgy sites on your app and having them tweeted out.

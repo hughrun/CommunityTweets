@@ -18,7 +18,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 You can contact Hugh on Twitter @hughrundle
 or email hugh [at] hughrundle [dot] net
 
-
 # CommunityTweets
 Formerly known as meteor2twitter at GitLab. This code runs [AusGLAMBlogs](https://glamblogs.newcardigan.org)
 
@@ -33,6 +32,72 @@ It loops every 10 minutes, and only announces one new feed each cycle, to avoid 
 Bloggers can register their blog, and then one or more administrators approve the new listing - everything in the RSS feed (usually the last 10 or 20 posts) is then added to the app's index, and new posts will be added and tweeted.
 
 Your community can find the latest posts either by following your twitter bot or checking/searching the web app.
+
+## Requirements
+
+* [nodejs](https://nodejs.org)
+* [Meteor](https://www.meteor.com)
+* MongoDB hosting account (optional but recommended)
+* A Twitter account with [app keys](https://apps.twitter.com)
+* A [Mailgun](https://www.mailgun.com) account
+* A [Pocket API key](https://getpocket.com/developer/)
+
+## Dependencies
+
+### Meteor (Atmosphere)
+
+* http
+* iron:router
+* themeteorchef:jquery-validation
+* accounts-password
+* email
+* easy:search
+* session
+
+### npm
+
+* feedparser-promised
+* twit
+
+Note that `feedparser-promised` and `twit` are now installed direct from npm using `Meteor npm install --save [packagename]`.
+
+Don't forget to add a /public/fonts and /public/images directory for your images and fonts (not included here for copyright reasons).
+
+## Demo
+
+At [@ausGLAMBlogs](https://twitter.com/ausglamblogs) and [glamblogs.newcardigan.org](https://glamblogs.newcardigan.org)
+
+## Deploying
+
+To deploy your own version, see the [Quick Deployment Guide](quick_deployment_guide.md)
+
+## TODOs
+
+* auto-check feed works before approval
+* admins can manually remove a post from the index and tweet queue
+* add nginx example
+* make names & urls variables for easy customisation
+* caddy?
+
+## LICENCE
+
+GPL 3+
+
+## Contributing
+
+Contributions to the code would be awesome 😀
+
+### Requests
+Not sure how to write the code but have a good idea, or found a bug? Either open an issue, or just let me know via Twitter or email.
+
+### Bug fixes
+Just send a pull request with a detailed explanation.
+
+### Security issues
+Please do not open an issue - email `hugh [at] hughrundle [dot] net` with an explanation of the problem and ideally a suggested fix.
+
+### New features
+Get in touch via email or Twitter to let me know what you're proposing - I'll probably love it and ask for a pull request.
 
 ## New in v 0.5.0
 
@@ -89,50 +154,3 @@ Your community can find the latest posts either by following your twitter bot or
 * address and twitter account in listings are now links
 * ability to download OPML file
 * failing feeds are identified on blog browse page
-
-## Requirements
-
-* [nodejs](https://nodejs.org)
-* [Meteor](https://www.meteor.com)
-* MongoDB hosting account (optional but recommended)
-* A Twitter account with [app keys](https://apps.twitter.com)
-* A [Mailgun](https://www.mailgun.com) account
-* A [Pocket API key](https://getpocket.com/developer/)
-
-## Dependencies
-
-### Meteor (Atmosphere)
-
-* http
-* iron:router
-* themeteorchef:jquery-validation
-* accounts-password
-* email
-* easy:search
-* session
-
-### npm
-
-* feedparser-promised
-* twit
-
-Note that `feedparser-promised` and `twit` are now installed direct from npm using `Meteor npm install --save [packagename]`.
-
-Don't forget to add a /public/fonts and /public/images directory for your images and fonts (not included here for copyright reasons).
-
-## Demo
-
-At [@ausGLAMBlogs](https://twitter.com/ausglamblogs) and [glamblogs.newcardigan.org](https://glamblogs.newcardigan.org)
-
-## Deploying
-
-To deploy your own version, see the [Quick Deployment Guide](quick_deployment_guide.md)
-
-## TODOs
-
-* auto-check feed works before approval
-* admins can manually remove a post from the index and tweet queue
-
-## LICENCE
-
-GPL 3+
