@@ -15,7 +15,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-You can contact Hugh on Twitter @hughrundle 
+You can contact Hugh on Twitter @hughrundle
 or email hugh [at] hughrundle [dot] net
 
 
@@ -39,6 +39,9 @@ Your community can find the latest posts either by following your twitter bot or
 * added ability for bloggers to avoid including a particular post by giving it a specified filter tag
 * minor updates to web app text
 * **as of this version CommunityTweets is now licensed under GPL v3** - see LICENSE for full terms
+
+## New in v 0.4.5
+* Pocket integration
 
 ## New in v 0.4
 
@@ -91,8 +94,10 @@ Your community can find the latest posts either by following your twitter bot or
 
 * [nodejs](https://nodejs.org)
 * [Meteor](https://www.meteor.com)
+* MongoDB hosting account (optional but recommended)
 * A Twitter account with [app keys](https://apps.twitter.com)
 * A [Mailgun](https://www.mailgun.com) account
+* A [Pocket API key](https://getpocket.com/developer/)
 
 ## Dependencies
 

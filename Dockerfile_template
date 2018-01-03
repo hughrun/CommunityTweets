@@ -1,0 +1,29 @@
+FROM ubuntu:16.04
+MAINTAINER Hugh Rundle
+LABEL Purpose="Install and run Meteor App Community Tweets"
+
+# install exact version of node we need
+# install curl & node 4.8.2
+RUN apt-get update
+RUN apt-get install curl -y && curl -sL https://deb.nodesource.com/setup_8.x | bash - && apt-get install nodejs -y apt-transport-https
+
+# remove curl
+# RUN apt-get remove curl -y
+
+# extract app tarball and install app
+WORKDIR /usr/src/app
+# change the tarball name below to whatever your app is called
+ADD my_awesome_app.tar.gz /usr/src/app
+RUN cd /usr/src/app/bundle/programs/server && npm install --production
+
+# declare environment variables
+EXPOSE 443
+# URL for your Mongo DB.
+ENV PORT=443 MONGO_URL=mongodb://login:password@xxxx.mlab.com:35776/myawesomeapp
+# URL for your app
+ROOT_URL=https://myawesomeapp.net
+# Meteor env settings.
+ENV METEOR_SETTINGS='{"TWITTER_CONSUMER_KEY" : "consumerkeycode","TWITTER_CONSUMER_SECRET" : "secretcode","TWITTER_ACCESS_TOKEN_KEY" : "token-key","TWITTER_ACCESS_TOKEN_SECRET" : "accesstokensecret","MAIL_URL" : "smtp://postmaster@mg1.myawesomeapp.net:123456789@smtp.mailgun.org:587/","EMAIL_FROM" : "hello@myawesomeapp.net","POCKET_KEY":"yourkeyhere"}'
+
+# run
+CMD cd /usr/src/app/bundle && node main.js
