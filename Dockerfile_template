@@ -22,8 +22,10 @@ EXPOSE 443
 ENV PORT=443 MONGO_URL=mongodb://login:password@xxxx.mlab.com:35776/myawesomeapp
 # URL for your app
 ROOT_URL=https://myawesomeapp.net
+# URL for EMAIL
+MAIL_URL=smtp://postmaster@mg1.myawesomeapp.net:123456789@smtp.mailgun.org:587/
 # Meteor env settings.
-ENV METEOR_SETTINGS='{"TWITTER_CONSUMER_KEY" : "consumerkeycode","TWITTER_CONSUMER_SECRET" : "secretcode","TWITTER_ACCESS_TOKEN_KEY" : "token-key","TWITTER_ACCESS_TOKEN_SECRET" : "accesstokensecret","MAIL_URL" : "smtp://postmaster@mg1.myawesomeapp.net:123456789@smtp.mailgun.org:587/","EMAIL_FROM" : "hello@myawesomeapp.net","POCKET_KEY":"yourkeyhere"}'
+ENV METEOR_SETTINGS='{"TWITTER_CONSUMER_KEY" : "consumerkeycode","TWITTER_CONSUMER_SECRET" : "secretcode","TWITTER_ACCESS_TOKEN_KEY" : "token-key","TWITTER_ACCESS_TOKEN_SECRET" : "accesstokensecret","EMAIL_FROM" : "hello@myawesomeapp.net","POCKET_KEY":"yourkeyhere"}'
 
 # run
 CMD cd /usr/src/app/bundle && node main.js

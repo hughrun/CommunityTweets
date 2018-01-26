@@ -58,10 +58,9 @@ Use [scp](https://en.wikipedia.org/wiki/Secure_copy) to upload to your server:
 export PORT=3000
 export ROOT_URL=“http://myurl.com”
 export MONGO_URL=“mongo://user:pass@mongoblah”
-export MAIL_URL=“smtp//mailinfoetc”
+export MAIL_URL=smtp://postmaster@mg1.myurl.com:123abc@smtp.mailgun.org:587/"
 export METEOR_SETTINGS=‘{
 "SITE_NAME":"My Awesome App",
-"MAIL_URL":"smtp://postmaster@mg1.myurl.com:123abc@smtp.mailgun.org:587/",
 "EMAIL_FROM":"hello@myurl.com",
 "TWITTER_CONSUMER_KEY":"abcdefg",
 "TWITTER_CONSUMER_SECRET":"abcdefg",
