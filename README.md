@@ -1,3 +1,4 @@
+This repo is no longer maintained and will be replaced with [Rockpool](https://github.com/hughrun/rockpool).
 
 CommunityTweets - a meteor app to index and tweet blog posts
 Copyright (C) 2017  Hugh Rundle
